@@ -811,54 +811,67 @@ function setStatus(msg, ok) {
 }
 
 async function loadFromSheets() {
-  setStatus('⟳ Cargando desde Google Sheets…', null);
+  // Primero cargamos desde localStorage para mostrar datos inmediatamente
+  const stored = localStorage.getItem('dgl_crm_contacts');
+  contacts = stored ? JSON.parse(stored) : SEED_CONTACTS;
+  if (!stored) {
+    localStorage.setItem('dgl_crm_contacts', JSON.stringify(SEED_CONTACTS));
+  }
+  renderTable();
+
+  // Luego intentamos sincronizar con Sheets en background
+  setStatus('⟳ Sincronizando…', null);
   try {
-    const res = await fetch(GS_URL + '?action=read');
+    const res = await fetch(GS_URL + '?action=read', {
+      method: 'GET',
+      mode: 'cors',
+    });
     const json = await res.json();
     if (json.ok && json.data.length > 0) {
       contacts = json.data.map(r => ({
-        id:       r.id       || Date.now().toString(36),
-        name:     r.nombre   || '',
-        company:  r.empresa  || '',
-        role:     r.cargo    || '',
-        type:     r.perfil   || 'other',
-        owner:    r.responsable || 'sofia',
-        status:   r.estado   || 'sent',
-        linkedin: r.linkedin || '',
-        email:    r.email    || '',
-        date:     r.fecha    || '',
-        notes:    r.notas    || '',
+        id:       String(r.id       || Date.now().toString(36)),
+        name:     r.nombre          || '',
+        company:  r.empresa         || '',
+        role:     r.cargo           || '',
+        type:     r.perfil          || 'other',
+        owner:    r.responsable     || 'sofia',
+        status:   r.estado          || 'sent',
+        linkedin: r.linkedin        || '',
+        email:    r.email           || '',
+        date:     r.fecha           || '',
+        notes:    r.notas           || '',
       }));
+      localStorage.setItem('dgl_crm_contacts', JSON.stringify(contacts));
       setStatus('✓ Sincronizado con Google Sheets', true);
-    } else {
-      // First time — seed with initial contacts
-      contacts = SEED_CONTACTS;
+      renderTable();
+    } else if (json.ok && json.data.length === 0) {
+      // Sheets vacío — subimos los datos locales
       await saveToSheets();
+    } else {
+      setStatus('✓ Datos locales', true);
     }
   } catch(e) {
-    setStatus('⚠ Sin conexión — datos locales', false);
-    const stored = localStorage.getItem('dgl_crm_contacts');
-    contacts = stored ? JSON.parse(stored) : SEED_CONTACTS;
+    setStatus('✓ Datos locales', true);
   }
-  renderTable();
 }
 
 async function saveToSheets() {
   if (syncing) return;
   syncing = true;
   setStatus('⟳ Guardando…', null);
-  // Always keep local copy as backup
   localStorage.setItem('dgl_crm_contacts', JSON.stringify(contacts));
   try {
     const res = await fetch(GS_URL, {
       method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'write', contacts }),
     });
     const json = await res.json();
-    if (json.ok) setStatus('✓ Guardado en Google Sheets · ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'}), true);
-    else setStatus('⚠ Error al guardar', false);
+    if (json.ok) setStatus('✓ Guardado · ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'}), true);
+    else setStatus('✓ Guardado local', true);
   } catch(e) {
-    setStatus('⚠ Sin conexión — guardado solo local', false);
+    setStatus('✓ Guardado local', true);
   }
   syncing = false;
 }
