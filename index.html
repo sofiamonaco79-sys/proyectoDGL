@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DGL Data Talent · Sales CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1d4a;
+    --navy-mid: #112466;
+    --navy-light: #1a3080;
+    --teal: #00b4d8;
+    --teal-dim: rgba(0,180,216,0.15);
+    --teal-border: rgba(0,180,216,0.3);
+    --white: #ffffff;
+    --off: #f0f4fa;
+    --text: #1a2540;
+    --muted: #6b7a99;
+    --border: #dde3f0;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --shadow: 0 2px 12px rgba(11,29,74,0.1);
+    --shadow-lg: 0 8px 32px rgba(11,29,74,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--navy);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+  }
+  .brand {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+  .brand span { color: var(--teal); }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .tab-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.6);
+  }
+  .tab-btn.active {
+    background: var(--teal);
+    color: var(--navy);
+  }
+  .tab-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.13);
+    color: white;
+  }
+
+  /* ── MAIN ── */
+  .main { padding: 28px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── KPI STRIP ── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    border-left: 3px solid var(--teal);
+  }
+  .kpi-val {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    background: white;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-box:focus { border-color: var(--teal); }
+  select.filter-sel {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: white;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+  }
+  .btn-add {
+    background: var(--teal);
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-add:hover { background: #00caf0; transform: translateY(-1px); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead tr {
+    background: var(--navy);
+    color: white;
+  }
+  thead th {
+    padding: 12px 14px;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: var(--navy-light); }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: #f7faff; }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 11px 14px; vertical-align: middle; }
+
+  .td-name { font-weight: 600; color: var(--navy); }
+  .td-company { color: var(--text); }
+  .td-role { font-size: 12px; color: var(--muted); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    white-space: nowrap;
+  }
+  .badge-hr    { background: #dbeafe; color: #1e40af; }
+  .badge-ceo   { background: #fce7f3; color: #9d174d; }
+  .badge-cto   { background: #ede9fe; color: #5b21b6; }
+  .badge-dpo   { background: #d1fae5; color: #065f46; }
+  .badge-other { background: #f3f4f6; color: #374151; }
+
+  .owner-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    white-space: nowrap;
+  }
+  .owner-sofia   { background: #fff0f9; color: #9d174d; border: 1px solid #fce7f3; }
+  .owner-daniel  { background: #f0f4ff; color: #1e40af; border: 1px solid #dbeafe; }
+  .owner-facundo { background: #f0fdf4; color: #065f46; border: 1px solid #d1fae5; }
+  .owner-pablo   { background: #fefce8; color: #92400e; border: 1px solid #fde68a; }
+  .owner-otro    { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+  .import-zone {
+    border: 2px dashed var(--teal-border);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    background: var(--teal-dim);
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .import-zone:hover { border-color: var(--teal); background: rgba(0,180,216,0.2); }
+  .import-zone p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .import-zone .iz-icon { font-size: 28px; }
+  .import-zone .iz-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 6px; }
+
+  .status-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-new      { background: var(--muted); }
+  .dot-sent     { background: var(--teal); }
+  .dot-replied  { background: var(--green); }
+  .dot-meeting  { background: var(--yellow); }
+  .dot-proposal { background: var(--purple); }
+  .dot-closed   { background: var(--green); }
+  .dot-discard  { background: var(--red); }
+
+  .action-btns { display: flex; gap: 6px; }
+  .btn-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn-icon:hover { background: var(--teal-dim); border-color: var(--teal); }
+
+  .td-notes {
+    max-width: 200px;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .td-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(11,29,74,0.55);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .modal-header {
+    background: var(--navy);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+  }
+  .modal-close {
+    background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 20px; cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: white; }
+  .modal-body { padding: 22px; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .form-input, .form-select, .form-textarea {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--teal);
+  }
+  .form-textarea { resize: vertical; min-height: 70px; }
+  .modal-footer {
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .btn-cancel {
+    padding: 9px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .btn-save {
+    padding: 9px 22px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: var(--navy-light); }
+
+  /* ── SPEECHES TAB ── */
+  .speeches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 20px;
+  }
+  .speech-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .speech-header {
+    background: var(--navy);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .speech-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.04em;
+  }
+  .speech-tag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--teal-dim);
+    color: var(--teal);
+    border: 1px solid var(--teal-border);
+  }
+  .speech-body {
+    padding: 18px;
+  }
+  .speech-context {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-style: italic;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .speech-text {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .speech-text .highlight {
+    background: rgba(0,180,216,0.12);
+    color: var(--navy);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .speech-footer {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+  .btn-copy {
+    flex: 1;
+    padding: 9px;
+    background: var(--teal-dim);
+    color: var(--teal);
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .btn-copy:hover { background: var(--teal); color: var(--navy); }
+  .btn-copy.copied { background: var(--green); color: white; border-color: var(--green); }
+
+  /* ── TIPS TAB ── */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .tip-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border-top: 3px solid var(--teal);
+  }
+  .tip-num {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: rgba(0,180,216,0.2);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .tip-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .tip-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .tip-text strong { color: var(--text); }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* kanban mini indicator */
+  .funnel-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    gap: 2px;
+    margin-top: 6px;
+  }
+  .funnel-seg { border-radius: 2px; transition: flex 0.5s; }
+
+  @media (max-width: 900px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .speeches-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">DGL <span>Data Talent</span> · Sales CRM</div>
+  <div class="topbar-right">
+    <span id="sync-status" style="font-size:11px;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;">Conectando…</span>
+    <button class="tab-btn active" onclick="switchTab('crm')">📋 Contactos</button>
+    <button class="tab-btn" onclick="switchTab('speeches')">💬 Mensajes</button>
+    <button class="tab-btn" onclick="switchTab('tips')">🎯 Estrategia</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══════════ TAB: CRM ══════════ -->
+  <div class="tab-content active" id="tab-crm">
+
+    <div class="page-header">
+      <div>
+        <div class="page-title">Pipeline de Prospectos</div>
+        <div class="page-subtitle">Seguimiento de outreach — DGL Data Talent · 2026</div>
+      </div>
+      <button class="btn-add" onclick="openModal()">+ Agregar Contacto</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-strip" id="kpi-strip">
+      <div class="kpi"><div class="kpi-val" id="kpi-total">0</div><div class="kpi-label">Total contactos</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-sent">0</div><div class="kpi-label">Mensaje enviado</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-replied">0</div><div class="kpi-label">Respondieron</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-meeting">0</div><div class="kpi-label">Reunión agendada</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpi-proposal">0</div><div class="kpi-label">Propuesta enviada</div></div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div style="flex:1;min-width:200px;position:relative;display:flex;align-items:center;">
+        <input class="search-box" style="width:100%;padding-right:36px;" type="text" placeholder="🔍  Buscar por nombre, empresa, rol…" id="search-input" oninput="renderTable()">
+        <button onclick="clearSearch()" title="Limpiar búsqueda" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;" id="clear-btn">×</button>
+      </div>
+      <select class="filter-sel" id="filter-status" onchange="renderTable()">
+        <option value="">Todos los estados</option>
+        <option value="new">Sin contactar</option>
+        <option value="sent">Mensaje enviado</option>
+        <option value="replied">Respondió</option>
+        <option value="meeting">Reunión agendada</option>
+        <option value="proposal">Propuesta enviada</option>
+        <option value="closed">Cerrado ✓</option>
+        <option value="discard">Descartado</option>
+      </select>
+      <select class="filter-sel" id="filter-type" onchange="renderTable()">
+        <option value="">Todos los perfiles</option>
+        <option value="hr">HR / Talent</option>
+        <option value="ceo">CEO / Founder</option>
+        <option value="cto">CTO / CDO / CISO</option>
+        <option value="dpo">DPO / Legal / Compliance</option>
+        <option value="other">Otro</option>
+      </select>
+      <select class="filter-sel" id="filter-owner" onchange="renderTable()">
+        <option value="">Todos los responsables</option>
+        <option value="sofia">Sofía</option>
+        <option value="daniel">Daniel</option>
+        <option value="facundo">Facundo</option>
+        <option value="pablo">Pablo</option>
+      </select>
+      <button class="btn-add" style="background:rgba(11,29,74,0.08);color:var(--navy);border:1px solid var(--border);" onclick="exportCSV()">⬇ Exportar CSV</button>
+      <label class="btn-add" style="background:rgba(11,29,74,0.08);color:var(--navy);border:1px solid var(--border);cursor:pointer;">
+        ⬆ Importar CSV
+        <input type="file" accept=".csv" style="display:none" onchange="importCSV(this)">
+      </label>
+      <button class="btn-add" style="background:rgba(0,180,216,0.1);color:var(--teal);border:1px solid var(--teal-border);" onclick="loadFromSheets()" title="Recargar desde Google Sheets">↺ Actualizar</button>
+    </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('name')">Nombre ↕</th>
+            <th onclick="sortBy('company')">Empresa ↕</th>
+            <th>Perfil</th>
+            <th onclick="sortBy('owner')">Responsable ↕</th>
+            <th onclick="sortBy('status')">Estado ↕</th>
+            <th>Notas</th>
+            <th onclick="sortBy('date')">Último contacto ↕</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="es-icon">📭</div>
+        <p>No hay contactos todavía.<br>Hacé clic en <strong>+ Agregar Contacto</strong> para empezar.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB: SPEECHES ══════════ -->
+  <div class="tab-content" id="tab-speeches">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Mensajes de Outreach</div>
+        <div class="page-subtitle">Templates listos para copiar — adaptados por perfil de contacto</div>
+      </div>
+    </div>
+    <div class="speeches-grid" id="speeches-container"></div>
+  </div>
+
+  <!-- ══════════ TAB: TIPS ══════════ -->
+  <div class="tab-content" id="tab-tips">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Estrategia de Outreach</div>
+        <div class="page-subtitle">Guía de acción para LinkedIn y mail — DGL Data Talent</div>
+      </div>
+    </div>
+    <div class="tips-grid" id="tips-container"></div>
+  </div>
+
+</div>
+
+<!-- MODAL AGREGAR/EDITAR -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Nuevo Contacto</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nombre completo *</label>
+          <input class="form-input" id="f-name" type="text" placeholder="Ana García">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Empresa *</label>
+          <input class="form-input" id="f-company" type="text" placeholder="Banco Nación">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Responsable</label>
+          <select class="form-select" id="f-owner">
+            <option value="sofia">Sofía Mónaco</option>
+            <option value="daniel">Daniel Monastersky</option>
+            <option value="facundo">Facundo Malaureille</option>
+            <option value="pablo">Pablo Mlynkiewicz</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cargo / Rol</label>
+          <input class="form-input" id="f-role" type="text" placeholder="HR Manager">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Perfil</label>
+          <select class="form-select" id="f-type">
+            <option value="hr">HR / Talent</option>
+            <option value="ceo">CEO / Founder</option>
+            <option value="cto">CTO / CDO / CISO</option>
+            <option value="dpo">DPO / Legal / Compliance</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn URL</label>
+          <input class="form-input" id="f-linkedin" type="url" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="f-email" type="email" placeholder="ana@empresa.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select class="form-select" id="f-status">
+            <option value="new">Sin contactar</option>
+            <option value="sent">Mensaje enviado</option>
+            <option value="replied">Respondió</option>
+            <option value="meeting">Reunión agendada</option>
+            <option value="proposal">Propuesta enviada</option>
+            <option value="closed">Cerrado ✓</option>
+            <option value="discard">Descartado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha último contacto</label>
+          <input class="form-input" id="f-date" type="date">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Notas</label>
+          <textarea class="form-textarea" id="f-notes" placeholder="Comentarios, contexto, próximo paso…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveContact()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────
+const GS_URL = 'https://script.google.com/macros/s/AKfycbz0VMFKESEq7S_QcqsuaxBNSDi374n4b9_PEhmLn0iDmutn2j8q5vM5dyDFgWmVTFLc/exec';
+
+const SEED_CONTACTS = [
+  { id:'s01', name:'Bruno Cerisoli',            company:'Payway',            role:'Head of Payfacs & Processing Partners',                   type:'other', owner:'sofia', linkedin:'https://www.linkedin.com/in/bruno-cerisoli-a2bb8574/',              email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s02', name:'Florencia Tiscornia',        company:'YPF',               role:'Vice Presidenta Personas',                                type:'hr',    owner:'sofia', linkedin:'https://www.linkedin.com/in/florencia-tiscornia-03269ba/',          email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s03', name:'Pablo Granado',              company:'PWC',               role:'',                                                        type:'hr',    owner:'sofia', linkedin:'https://www.linkedin.com/in/pablo-granado-/',                       email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s04', name:'Fernando Bocchicchio',       company:'Aggreko',           role:'',                                                        type:'hr',    owner:'sofia', linkedin:'https://www.linkedin.com/in/fernando-bocchicchio-0243498/',          email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s05', name:'Pablo Sanchez',              company:'Brubank',           role:'CIO',                                                     type:'ceo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/pablomsanchez/',                        email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s06', name:'Gonzalo Manuel Lissarrague', company:'Nubco',             role:'CEO',                                                     type:'ceo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/gonzalo-manuel-lissarrague-12448339/', email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s07', name:'Agustina Lando',             company:'Nubceo',            role:'Data Analyst & Product Development',                      type:'dpo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/agustina-land%C3%B3-a0047870/',         email:'', status:'sent',     date:'2026-06-02', notes:'Próxima Reunión Jueves 4 a las 9.30 hs' },
+  { id:'s08', name:'Martín Piñeiro',             company:'Worldsys',          role:'CEO',                                                     type:'ceo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/mpi%C3%B1eiro/',                        email:'', status:'proposal', date:'2026-06-02', notes:'' },
+  { id:'s09', name:'Rafael I. Soto',             company:'MODO',              role:'CEO',                                                     type:'hr',    owner:'sofia', linkedin:'https://www.linkedin.com/in/rafasoto/',                              email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s10', name:'Sebastián Rosenbolt',        company:'MODO',              role:'CTO',                                                     type:'cto',   owner:'sofia', linkedin:'https://www.linkedin.com/in/srosenbolt/?locale=es',                 email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s11', name:'Daniel Battistelli',         company:'Enviopack',         role:'CTO',                                                     type:'cto',   owner:'sofia', linkedin:'https://www.linkedin.com/in/danielbattistelli/',                    email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s12', name:'Nur Malek Pascha',           company:'Enviopack',         role:'Co Founder',                                              type:'ceo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/nurmalekpascha/',                       email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s13', name:'Pamela Sheurer',             company:'Nubimetrics',       role:'CEO & CoFounder',                                         type:'ceo',   owner:'sofia', linkedin:'https://www.linkedin.com/in/pamela-scheurer-62448134/',              email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s14', name:'Diego Pacini',               company:'Energia Argentina', role:'Gerente de Tecnología de Información y Comunicación',     type:'other', owner:'sofia', linkedin:'https://www.linkedin.com/in/diegopacini/',                          email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s15', name:'Ramiro Hernandez',           company:'YPF',               role:'PMO | Innovation & Digital Transformation',               type:'other', owner:'sofia', linkedin:'https://www.linkedin.com/in/ramirojulianhernandez/',                email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s16', name:'Agustina Mirabella',         company:'Eramine',           role:'RRHH | People Experience | Talento y Desarrollo',        type:'hr',    owner:'sofia', linkedin:'https://www.linkedin.com/in/agustina-mirabella/',                   email:'', status:'sent',     date:'2026-06-02', notes:'' },
+  { id:'s17', name:'Marcelo Helmich',            company:'Carrefour',         role:'Director de Operaciones Logística y Transporte',          type:'other', owner:'sofia', linkedin:'https://www.linkedin.com/in/marcelo-helmich-1b49aa66/',              email:'', status:'sent',     date:'2026-06-02', notes:'' },
+];
+
+let contacts = [];
+let editingId = null;
+let sortKey = 'date';
+let sortDir = -1;
+let syncing = false;
+
+// ─── GOOGLE SHEETS SYNC ──────────────────────────────────────
+function setStatus(msg, ok) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = ok === false ? '#ef4444' : ok === true ? '#10b981' : '#6b7a99';
+}
+
+async function loadFromSheets() {
+  setStatus('⟳ Cargando desde Google Sheets…', null);
+  try {
+    const res = await fetch(GS_URL + '?action=read');
+    const json = await res.json();
+    if (json.ok && json.data.length > 0) {
+      contacts = json.data.map(r => ({
+        id:       r.id       || Date.now().toString(36),
+        name:     r.nombre   || '',
+        company:  r.empresa  || '',
+        role:     r.cargo    || '',
+        type:     r.perfil   || 'other',
+        owner:    r.responsable || 'sofia',
+        status:   r.estado   || 'sent',
+        linkedin: r.linkedin || '',
+        email:    r.email    || '',
+        date:     r.fecha    || '',
+        notes:    r.notas    || '',
+      }));
+      setStatus('✓ Sincronizado con Google Sheets', true);
+    } else {
+      // First time — seed with initial contacts
+      contacts = SEED_CONTACTS;
+      await saveToSheets();
+    }
+  } catch(e) {
+    setStatus('⚠ Sin conexión — datos locales', false);
+    const stored = localStorage.getItem('dgl_crm_contacts');
+    contacts = stored ? JSON.parse(stored) : SEED_CONTACTS;
+  }
+  renderTable();
+}
+
+async function saveToSheets() {
+  if (syncing) return;
+  syncing = true;
+  setStatus('⟳ Guardando…', null);
+  // Always keep local copy as backup
+  localStorage.setItem('dgl_crm_contacts', JSON.stringify(contacts));
+  try {
+    const res = await fetch(GS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'write', contacts }),
+    });
+    const json = await res.json();
+    if (json.ok) setStatus('✓ Guardado en Google Sheets · ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'}), true);
+    else setStatus('⚠ Error al guardar', false);
+  } catch(e) {
+    setStatus('⚠ Sin conexión — guardado solo local', false);
+  }
+  syncing = false;
+}
+
+function save() {
+  saveToSheets();
+}
+
+// ─── STATUS CONFIG ───────────────────────────────────────────
+const STATUS = {
+  new:      { label: 'Sin contactar',     dot: 'dot-new'      },
+  sent:     { label: 'Enviado',           dot: 'dot-sent'     },
+  replied:  { label: 'Respondió',         dot: 'dot-replied'  },
+  meeting:  { label: 'Reunión agendada',  dot: 'dot-meeting'  },
+  proposal: { label: 'Propuesta enviada', dot: 'dot-proposal' },
+  closed:   { label: 'Cerrado ✓',         dot: 'dot-closed'   },
+  discard:  { label: 'Descartado',        dot: 'dot-discard'  },
+};
+
+const TYPE_BADGE = {
+  hr:    '<span class="badge badge-hr">HR / Talent</span>',
+  ceo:   '<span class="badge badge-ceo">CEO / Founder</span>',
+  cto:   '<span class="badge badge-cto">CTO / CDO</span>',
+  dpo:   '<span class="badge badge-dpo">DPO / Legal</span>',
+  other: '<span class="badge badge-other">Otro</span>',
+};
+
+// ─── RENDER TABLE ────────────────────────────────────────────
+function renderTable() {
+  const q    = document.getElementById('search-input').value.toLowerCase();
+  const fSt  = document.getElementById('filter-status').value;
+  const fTy  = document.getElementById('filter-type').value;
+  const fOw  = document.getElementById('filter-owner').value;
+
+  let rows = contacts.filter(c => {
+    const match = (c.name+c.company+c.role).toLowerCase().includes(q);
+    const st    = !fSt || c.status === fSt;
+    const ty    = !fTy || c.type === fTy;
+    const ow    = !fOw || c.owner === fOw;
+    return match && st && ty && ow;
+  });
+
+  rows.sort((a,b) => {
+    let va = a[sortKey]||'', vb = b[sortKey]||'';
+    return va < vb ? sortDir : va > vb ? -sortDir : 0;
+  });
+
+  const tbody = document.getElementById('table-body');
+  const empty = document.getElementById('empty-state');
+
+  const OWNER_LABEL = { sofia:'Sofía', daniel:'Daniel', facundo:'Facundo', pablo:'Pablo' };
+  const OWNER_CLASS = { sofia:'owner-sofia', daniel:'owner-daniel', facundo:'owner-facundo', pablo:'owner-pablo' };
+
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = rows.map(c => {
+      const s = STATUS[c.status] || STATUS.new;
+      const li = c.linkedin ? `<a class="btn-icon" href="${c.linkedin}" target="_blank" title="LinkedIn">🔗</a>` : '';
+      const em = c.email    ? `<a class="btn-icon" href="mailto:${c.email}" title="Email">✉️</a>` : '';
+      const ownerCls = OWNER_CLASS[c.owner] || 'owner-otro';
+      const ownerLbl = OWNER_LABEL[c.owner] || c.owner || '—';
+      return `<tr>
+        <td class="td-name">${c.name}</td>
+        <td><div class="td-company">${c.company||'—'}</div><div class="td-role">${c.role||''}</div></td>
+        <td>${TYPE_BADGE[c.type]||TYPE_BADGE.other}</td>
+        <td><span class="owner-badge ${ownerCls}">${ownerLbl}</span></td>
+        <td>
+          <div class="status-dot">
+            <span class="dot ${s.dot}"></span>${s.label}
+          </div>
+        </td>
+        <td class="td-notes" title="${(c.notes||'').replace(/"/g,"'")}">
+          ${c.notes||'<span style="color:var(--border)">—</span>'}
+        </td>
+        <td class="td-date">${c.date||'—'}</td>
+        <td>
+          <div class="action-btns">
+            ${li}${em}
+            <button class="btn-icon" onclick="editContact('${c.id}')" title="Editar">✏️</button>
+            <button class="btn-icon" onclick="deleteContact('${c.id}')" title="Eliminar" style="border-color:rgba(239,68,68,0.3)">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  updateKPIs();
+}
+
+function updateKPIs() {
+  const all = contacts;
+  document.getElementById('kpi-total').textContent    = all.length;
+  document.getElementById('kpi-sent').textContent     = all.filter(c=>c.status==='sent').length;
+  document.getElementById('kpi-replied').textContent  = all.filter(c=>c.status==='replied').length;
+  document.getElementById('kpi-meeting').textContent  = all.filter(c=>c.status==='meeting').length;
+  document.getElementById('kpi-proposal').textContent = all.filter(c=>c.status==='proposal').length;
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = 1; }
+  renderTable();
+}
+
+// ─── MODAL ───────────────────────────────────────────────────
+function openModal(id) {
+  editingId = id || null;
+  document.getElementById('modal-title').textContent = id ? 'Editar Contacto' : 'Nuevo Contacto';
+  const c = id ? contacts.find(x=>x.id===id) : {};
+  document.getElementById('f-name').value     = c.name||'';
+  document.getElementById('f-company').value  = c.company||'';
+  document.getElementById('f-role').value     = c.role||'';
+  document.getElementById('f-type').value     = c.type||'hr';
+  document.getElementById('f-owner').value    = c.owner||'sofia';
+  document.getElementById('f-linkedin').value = c.linkedin||'';
+  document.getElementById('f-email').value    = c.email||'';
+  document.getElementById('f-status').value   = c.status||'new';
+  document.getElementById('f-date').value     = c.date||new Date().toISOString().slice(0,10);
+  document.getElementById('f-notes').value    = c.notes||'';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+}
+
+function saveContact() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('El nombre es requerido.'); return; }
+  const obj = {
+    id:       editingId || Date.now().toString(36),
+    name,
+    company:  document.getElementById('f-company').value.trim(),
+    role:     document.getElementById('f-role').value.trim(),
+    type:     document.getElementById('f-type').value,
+    owner:    document.getElementById('f-owner').value,
+    linkedin: document.getElementById('f-linkedin').value.trim(),
+    email:    document.getElementById('f-email').value.trim(),
+    status:   document.getElementById('f-status').value,
+    date:     document.getElementById('f-date').value,
+    notes:    document.getElementById('f-notes').value.trim(),
+  };
+  if (editingId) {
+    const idx = contacts.findIndex(c=>c.id===editingId);
+    contacts[idx] = obj;
+  } else {
+    contacts.unshift(obj);
+  }
+  save(); closeModal(); renderTable();
+}
+
+function editContact(id)   { openModal(id); }
+function deleteContact(id) {
+  if (!confirm('¿Eliminar este contacto?')) return;
+  contacts = contacts.filter(c=>c.id!==id);
+  save(); renderTable();
+}
+
+// ─── EXPORT CSV ──────────────────────────────────────────────
+function exportCSV() {
+  const headers = ['Nombre','Empresa','Cargo','Perfil','Responsable','Estado','LinkedIn','Email','Último contacto','Notas'];
+  const OWNER_LABEL = { sofia:'Sofía', daniel:'Daniel', facundo:'Facundo', pablo:'Pablo' };
+  const rows = contacts.map(c => [
+    c.name, c.company, c.role, c.type,
+    OWNER_LABEL[c.owner]||c.owner||'',
+    STATUS[c.status]?.label||c.status,
+    c.linkedin, c.email, c.date, c.notes
+  ].map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF'+csv);
+  a.download = 'DGL_SalesCRM_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ─── IMPORT CSV ──────────────────────────────────────────────
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const lines = e.target.result.split('\n').filter(l=>l.trim());
+    if (lines.length < 2) { alert('El CSV está vacío o no tiene datos.'); return; }
+    // Skip header row, parse each line
+    const OWNER_MAP = { 'sofía':'sofia','sofia':'sofia','daniel':'daniel','facundo':'facundo','pablo':'pablo' };
+    const STATUS_MAP = {
+      'sin contactar':'new','enviado':'sent','respondió':'replied',
+      'reunión agendada':'meeting','propuesta enviada':'proposal',
+      'cerrado ✓':'closed','cerrado':'closed','descartado':'discard'
+    };
+    let imported = 0;
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].match(/(".*?"|[^,]+)(?=,|$)/g) || lines[i].split(',');
+      const clean = cols.map(c => c.replace(/^"|"$/g,'').replace(/""/g,'"').trim());
+      const name = clean[0];
+      if (!name) continue;
+      // Check for duplicate by name+company
+      const exists = contacts.find(c => c.name.toLowerCase()===name.toLowerCase() && (c.company||'').toLowerCase()===(clean[1]||'').toLowerCase());
+      if (exists) continue;
+      contacts.push({
+        id: Date.now().toString(36) + i,
+        name,
+        company:  clean[1]||'',
+        role:     clean[2]||'',
+        type:     clean[3]||'other',
+        owner:    OWNER_MAP[(clean[4]||'').toLowerCase()] || 'sofia',
+        status:   STATUS_MAP[(clean[5]||'').toLowerCase()] || 'sent',
+        linkedin: clean[6]||'',
+        email:    clean[7]||'',
+        date:     clean[8]||new Date().toISOString().slice(0,10),
+        notes:    clean[9]||'',
+      });
+      imported++;
+    }
+    save(); renderTable();
+    alert(`✅ Importados ${imported} contactos nuevos. (Duplicados ignorados)`);
+    input.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// ─── CLEAR SEARCH ─────────────────────────────────────────────
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  renderTable();
+}
+
+// ─── TAB SWITCH ──────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ─── SPEECHES ────────────────────────────────────────────────
+const SPEECHES = [
+  {
+    title: 'Primer contacto — HR / Talent Manager',
+    tag: 'LinkedIn · 1er mensaje',
+    context: 'Para HR Managers o People Directors con quienes ya tenés conexión. Tono: cálido, directo, sin presión.',
+    text: `Hola [Nombre], ¿cómo estás?
+
+Quería contarte brevemente que desde DGL (Data Governance Latam) lanzamos una nueva unidad especializada en búsqueda ejecutiva para perfiles de datos, privacidad y cumplimiento normativo: DGL Data Talent.
+
+Lo que nos hace distintos es que contamos con un pipeline de más de 784 profesionales pre-validados — egresados de nuestra Diplomatura en Data Governance de la Universidad Austral, que ya tienen formación técnica real en Data Governance, DPO y Ciberseguridad.
+
+Si en algún momento tienen una búsqueda activa o prevista en ese espacio, me encantaría tener 20 minutos para contarte cómo trabajamos.
+
+¡Saludos!
+Sofía Mónaco — DGL Data Talent`,
+  },
+  {
+    title: 'Primer contacto — CEO / Founder',
+    tag: 'LinkedIn · 1er mensaje',
+    context: 'Para founders o C-suite. Tono: conciso, orientado a negocio y urgencia regulatoria.',
+    text: `Hola [Nombre],
+
+Te cuento en pocas líneas: desde DGL (Data Governance Latam) lanzamos DGL Data Talent, una unidad de búsqueda ejecutiva 100% especializada en datos, privacidad y compliance — exclusivamente en LATAM.
+
+Con el avance de LGPD, regulaciones de IA y presión del BCRA, muchas empresas están teniendo dificultades para encontrar perfiles técnicos calificados (DPO, Data Governance Lead, AI Risk Officer) porque los headhunters generalistas no tienen el conocimiento del dominio.
+
+Nosotros sí. Y contamos con un pipeline propio de 780+ candidatos ya formados — egresados de nuestra Diplomatura en Data Governance de la Universidad Austral.
+
+Si tienen o prevén una necesidad en ese espacio, con gusto coordinamos una llamada corta.
+
+Sofía Mónaco — DGL Data Talent`,
+  },
+  {
+    title: 'Primer contacto — DPO / Compliance / Legal',
+    tag: 'LinkedIn · 1er mensaje',
+    context: 'Para DPOs u otros especialistas que pueden ser aliados o referidores. Tono: par a par, colaborativo.',
+    text: `Hola [Nombre],
+
+Veo que trabajás en el espacio de privacidad/compliance — quería presentarme brevemente.
+
+Soy Sofía Mónaco, directora de DGL Data Talent, una unidad nueva dentro de DGL (Data Governance Latam) dedicada a conectar empresas con perfiles especializados en datos, privacidad e IA.
+
+A diferencia de una consultora generalista, tenemos acceso directo a la comunidad de egresados de nuestra Diplomatura en Data Governance de la Universidad Austral (8 años, 780+ profesionales) — así que cuando alguien necesita un DPO o un Data Governance Lead, podemos actuar rápido y con criterio técnico real.
+
+Si alguna vez conocés una empresa buscando ese tipo de perfil, me encantaría que pensaras en nosotros. ¡Y si vos mismo/a tenés alguna necesidad, con más razón!
+
+Sofía`,
+  },
+  {
+    title: 'Follow-up (sin respuesta, 7 días)',
+    tag: 'LinkedIn · 2do toque',
+    context: 'Para usar si no hubo respuesta al primer mensaje. Corto, sin insistir.',
+    text: `Hola [Nombre], sólo quería dejar flotando el mensaje anterior por si se perdió entre notificaciones 🙂
+
+Si no es el momento o no es relevante para tu área, sin problema — lo entiendo perfectamente.
+
+Pero si en algún momento surge una búsqueda en datos, privacidad o compliance, acordate de DGL Data Talent.
+
+¡Saludos!
+Sofía`,
+  },
+  {
+    title: 'Primer contacto — por mail',
+    tag: 'Email · 1er contacto',
+    context: 'Para cuando tenés el email del contacto. Asunto sugerido incluido.',
+    text: `Asunto: Búsqueda especializada en datos y privacidad — DGL Data Talent
+
+Estimado/a [Nombre],
+
+Me comunico desde DGL Data Talent, la nueva unidad de búsqueda ejecutiva de Data Governance Latam (DGL), firma con más de 20 años de trayectoria en Data Governance, Privacidad e IA en la región.
+
+Nos especializamos exclusivamente en perfiles del ecosistema de datos: DPO, Data Governance Lead, Chief Data Officer, AI Risk Officer, entre otros — con cobertura en toda LATAM.
+
+Nuestro diferencial es concreto: contamos con un pipeline propio de más de 780 candidatos pre-validados, egresados de la Diplomatura en Data Governance de la Universidad Austral (8 ediciones, desde 2017). Esto nos permite presentar candidatos calificados con tiempos significativamente menores a los de una búsqueda tradicional.
+
+¿Tendría 20 minutos en los próximos días para una llamada exploratoria?
+
+Quedo a disposición.
+
+Sofía Mónaco
+Directora · DGL Data Talent
+talent@datagovernancelatam.com`,
+  },
+];
+
+function renderSpeeches() {
+  document.getElementById('speeches-container').innerHTML = SPEECHES.map((s,i) => `
+    <div class="speech-card">
+      <div class="speech-header">
+        <div class="speech-title">${s.title}</div>
+        <div class="speech-tag">${s.tag}</div>
+      </div>
+      <div class="speech-body">
+        <div class="speech-context">${s.context}</div>
+        <div class="speech-text">${s.text.replace(/\[(\w+)\]/g,'<span class="highlight">[$1]</span>')}</div>
+      </div>
+      <div class="speech-footer">
+        <button class="btn-copy" onclick="copyText(this, ${i})">📋 Copiar mensaje</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyText(btn, idx) {
+  navigator.clipboard.writeText(SPEECHES[idx].text).then(()=>{
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent = '📋 Copiar mensaje'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ─── TIPS ────────────────────────────────────────────────────
+const TIPS = [
+  {
+    num: '01',
+    title: 'Segmentá antes de mandar',
+    text: 'Antes de enviar masivamente, clasificá tus contactos de LinkedIn en 3 listas: <strong>HR/People</strong> (prioridad alta), <strong>CEO/Founders de empresas reguladas</strong> (bancos, fintechs, salud), y <strong>DPO/Compliance</strong> como red de referidos. Cada lista recibe un mensaje diferente.',
+  },
+  {
+    num: '02',
+    title: 'Ritmo sostenible: 10-15 por día',
+    text: 'LinkedIn penaliza las cuentas que mandan muchos mensajes en poco tiempo. <strong>10 a 15 mensajes por día laborable</strong> es el ritmo ideal: suficiente para escalar sin riesgo. En un mes llegás a 200-300 contactos.',
+  },
+  {
+    num: '03',
+    title: 'El asunto de Sales Navigator',
+    text: 'Si querés escalar, <strong>LinkedIn Sales Navigator</strong> (~USD 100/mes) te permite filtrar contactos por industria, cargo y empresa. Podés buscar "HR Manager + Fintech + Argentina" y mandar mensajes InMail directamente sin ser 1er grado.',
+  },
+  {
+    num: '04',
+    title: 'Personalizá la primera línea',
+    text: 'El truco más efectivo: cambiá solo la primera línea del mensaje para que sea específica a esa persona. Ejemplo: <strong>"Vi que estás liderando el área de People en [Empresa] desde hace un año"</strong>. El resto puede ser idéntico. La tasa de respuesta sube 3x.',
+  },
+  {
+    num: '05',
+    title: 'Timing óptimo',
+    text: 'Los mejores momentos para mandar mensajes en LinkedIn son <strong>martes a jueves, entre 9 y 11am</strong>. Evitá lunes a la mañana y viernes. Para mails, martes-miércoles a las 8:30am tiene la mayor tasa de apertura.',
+  },
+  {
+    num: '06',
+    title: 'El follow-up es donde está el negocio',
+    text: 'El <strong>80% de los cierres ocurre entre el 2do y 5to contacto</strong>. La mayoría abandona después del primero. Programá un follow-up en el CRM a los 7 días. Si tampoco responde, un tercero al mes es aceptable antes de archivar.',
+  },
+  {
+    num: '07',
+    title: 'Contenido de LinkedIn como calentamiento',
+    text: 'Publicar 2-3 posts por semana sobre tendencias en Data Governance, DPO o privacidad hace que cuando tu mensaje llegue, el contacto ya te conozca. <strong>El mensaje frío se vuelve tibio</strong> si te vieron comentar algo relevante.',
+  },
+  {
+    num: '08',
+    title: 'Métricas que importan',
+    text: 'Tasa de respuesta objetivo: <strong>>15%</strong> en LinkedIn, <strong>>8%</strong> en mail frío. Si estás por debajo, el problema es el mensaje, no el canal. Revisá el primer párrafo — tiene que hablar del dolor del cliente, no de vos.',
+  },
+  {
+    num: '09',
+    title: 'El brochure, en el momento justo',
+    text: 'No mandes el brochure en el primer mensaje — es prematuro y baja la respuesta. Mandalo <strong>después de que respondan</strong>, antes de la reunión, como material de preparación. O al final de la reunión como cierre.',
+  },
+];
+
+function renderTips() {
+  document.getElementById('tips-container').innerHTML = TIPS.map(t => `
+    <div class="tip-card">
+      <div class="tip-num">${t.num}</div>
+      <div class="tip-title">${t.title}</div>
+      <div class="tip-text">${t.text}</div>
+    </div>
+  `).join('');
+}
+
+// ─── ASSIGN ALL TO SOFIA ─────────────────────────────────────
+function assignAllToSofia() {
+  const sin = contacts.filter(c => !c.owner).length;
+  const todos = contacts.length;
+  const msg = sin > 0
+    ? `Se van a asignar ${sin} contacto(s) sin responsable a Sofía Mónaco.\n¿Continuás?`
+    : `Todos los contactos (${todos}) ya tienen responsable asignado.\n¿Querés sobreescribir TODOS y asignarlos a Sofía de todas formas?`;
+  if (!confirm(msg)) return;
+  if (sin > 0) {
+    contacts = contacts.map(c => ({ ...c, owner: c.owner || 'sofia' }));
+  } else {
+    contacts = contacts.map(c => ({ ...c, owner: 'sofia' }));
+  }
+  save(); renderTable();
+  alert(`✅ Listo — responsable actualizado a Sofía Mónaco.`);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+loadFromSheets();
+renderSpeeches();
+renderTips();
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
