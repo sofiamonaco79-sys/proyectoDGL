@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DGL Data Talent · Plataforma</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2335;--surface3:#242840;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#7c6af7;--accent2:#6355e8;--accent-dim:rgba(124,106,247,0.14);--accent-bd:rgba(124,106,247,0.28);
+  --text:#e8eaf0;--muted:#8890a4;--muted2:#52596e;
+  --ok:#34d399;--ok-bg:rgba(52,211,153,0.11);
+  --warn:#fbbf24;--warn-bg:rgba(251,191,36,0.11);
+  --err:#f87171;--err-bg:rgba(248,113,113,0.11);
+  --info:#60a5fa;--info-bg:rgba(96,165,250,0.11);
+  --star:#f59e0b;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
+.app-header{display:flex;align-items:center;gap:10px;padding:0 20px;height:52px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.logo{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-0.3px}
+.logo span{color:var(--accent)}
+.logo-sep{color:var(--muted2);margin:0 6px}
+.logo-sub{font-size:12px;color:var(--muted);font-weight:400}
+.nav-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto}
+.nav-tab{padding:11px 18px;font-size:13px;cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s}
+.nav-tab:hover:not(.active){color:var(--text)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.page{display:none;padding:20px}
+.page.active{display:block}
+.metrics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.hr-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.metric-label{font-size:10px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.metric-value{font-size:26px;font-weight:600;color:var(--text);line-height:1}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:14px}
+.card-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.card-title{font-size:14px;font-weight:500}
+.card-body{padding:16px 18px}
+.sec-title{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.filter-bar{display:flex;gap:8px;align-items:center;padding:12px 18px;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{font-size:13px;padding:7px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text)}
+.filter-bar input{flex:1;min-width:150px}
+.filter-bar input::placeholder{color:var(--muted2)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;font-weight:600;color:var(--muted);text-align:left;padding:8px 14px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.triple{grid-template-columns:1fr 1fr 1fr}
+.form-row.single{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:var(--muted)}
+.form-group input,.form-group select,.form-group textarea{font-size:13px;padding:8px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text);width:100%}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:70px}
+.form-group input.aif,.form-group textarea.aif,.form-group select.aif{border-color:var(--accent);background:rgba(124,106,247,.08)}
+select option{background:var(--surface2);color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border2);color:var(--muted)}
+.btn-secondary:hover{color:var(--text)}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--muted)}
+.btn-ghost:hover{color:var(--text)}
+.btn-ai{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ai:hover{opacity:.9}
+.btn-ai:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;display:inline-block}
+.p-sc{background:var(--surface3);color:var(--muted);border:1px solid var(--border2)}
+.p-me{background:var(--info-bg);color:var(--info);border:1px solid rgba(96,165,250,.22)}
+.p-re{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.22)}
+.p-ru{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.22)}
+.p-pr{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bd)}
+.p-ce{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.22)}
+.p-de{background:var(--err-bg);color:var(--err);border:1px solid rgba(248,113,113,.22)}
+.p-av{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.22)}
+.p-es{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.22)}
+.p-di{background:var(--err-bg);color:var(--err);border:1px solid rgba(248,113,113,.22)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-bd);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.avatar-lg{width:38px;height:38px;font-size:13px}
+.name-cell{display:flex;align-items:center;gap:8px}
+.star-btn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted2);padding:0;line-height:1}
+.star-btn.on{color:var(--star)}
+.stars-row{display:flex;gap:2px}
+.stars-sm{color:var(--star);font-size:12px;letter-spacing:1px}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.rec-btn{padding:10px 6px;border-radius:8px;border:1px solid var(--border2);font-size:12px;cursor:pointer;text-align:center;background:var(--surface2);color:var(--muted);transition:all .15s}
+.rec-btn.s-av{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.rec-btn.s-es{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.rec-btn.s-di{background:var(--err-bg);border-color:var(--err);color:var(--err)}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score-item{display:flex;flex-direction:column;gap:5px}
+.score-item label{font-size:11px;color:var(--muted)}
+.ai-prog{display:none;background:var(--surface);border:1px solid var(--accent-bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.ai-prog.show{display:block}
+.ai-prog-hd{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.ai-steps{display:flex;flex-direction:column;gap:5px}
+.ai-step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);padding:2px 0}
+.ai-step.done{color:var(--ok)}
+.ai-step.running{color:var(--accent)}
+.ai-step-ico{width:14px;height:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ai-badge{display:none;font-size:11px;padding:2px 8px;background:var(--accent-dim);border:1px solid var(--accent-bd);border-radius:20px;color:var(--accent);margin-left:8px}
+.ai-badge.show{display:inline-flex;align-items:center;gap:4px}
+.spin{width:12px;height:12px;border:1.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-start;justify-content:center;padding:48px 20px;overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:580px;max-width:100%;padding:22px;flex-shrink:0}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-size:15px;font-weight:500}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-x:hover{color:var(--text)}
+.modal-ft{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.drow{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.drow:last-child{border-bottom:none}
+.dk{color:var(--muted);flex-shrink:0}
+.dv{color:var(--text);font-weight:500;max-width:65%;text-align:right}
+.sdgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.sditem{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.sdlbl{font-size:11px;color:var(--muted);margin-bottom:4px}
+.toast{position:fixed;bottom:24px;right:24px;z-index:300;display:none;background:var(--accent);color:#fff;border-radius:8px;padding:10px 16px;font-size:13px;align-items:center;gap:8px}
+.toast.show{display:flex}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px}
+.empty-ico{font-size:36px;display:block;margin-bottom:10px;color:var(--muted2)}
+.hr-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.hr-tab{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--muted)}
+.hr-tab.active{background:var(--accent-dim);border-color:var(--accent-bd);color:var(--accent)}
+.hr-tab:hover:not(.active){color:var(--text)}
+.tpl-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
+.tpl-tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.05em;margin-bottom:10px;display:inline-block}
+.tpl-body{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px;white-space:pre-wrap}
+.est-sec{margin-bottom:22px}
+.est-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px}
+.est-item{font-size:13px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border);line-height:1.5}
+.est-item:last-child{border-bottom:none}
+@media(max-width:640px){.metrics-grid,.hr-metrics{grid-template-columns:repeat(2,1fr)}.form-row,.form-row.triple{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo">DGL <span>Data Talent</span><span class="logo-sep">·</span><span class="logo-sub">Plataforma</span></div>
+  <div style="flex:1"></div>
+  <span style="font-size:12px;color:var(--muted)">Sofia · DGL Talent</span>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" data-page="pipeline">📋 Pipeline</button>
+  <button class="nav-tab" data-page="mensajes">💬 Mensajes</button>
+  <button class="nav-tab" data-page="estrategia">🎯 Estrategia</button>
+  <button class="nav-tab" data-page="hr">👥 HR</button>
+</nav>
+
+<!-- PIPELINE -->
+<div id="page-pipeline" class="page active">
+  <div id="pip-metrics" class="metrics-grid"></div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pipeline de Prospectos — DGL Data Talent · 2026</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ Exportar CSV</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('csv-imp').click()">⬆ Importar CSV</button>
+        <input type="file" id="csv-imp" accept=".csv" style="display:none" onchange="importCSV(event)">
+        <button class="btn btn-ghost btn-sm" onclick="renderPipeline()">↺ Actualizar</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal()">+ Agregar Contacto</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="pip-search" placeholder="Buscar nombre o empresa..." oninput="renderPipeline()">
+      <select id="pip-est" onchange="renderPipeline()">
+        <option value="">Todos los estados</option>
+        <option>Sin contactar</option><option>Mensaje enviado</option>
+        <option>Respondió</option><option>Reunión agendada</option>
+        <option>Propuesta enviada</option><option>Cerrado ✓</option><option>Descartado</option>
+      </select>
+      <select id="pip-perf" onchange="renderPipeline()">
+        <option value="">Todos los perfiles</option>
+        <option>HR / Talent</option><option>CEO / Founder</option>
+        <option>CTO / CDO / CISO</option><option>DPO / Legal / Compliance</option><option>Otro</option>
+      </select>
+      <select id="pip-resp" onchange="renderPipeline()">
+        <option value="">Todos los responsables</option>
+        <option>Sofía</option><option>Daniel</option><option>Facundo</option><option>Pablo</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nombre ↕</th><th>Empresa ↕</th><th>Perfil</th><th>Responsable ↕</th><th>Estado ↕</th><th>Notas</th><th>Último contacto ↕</th><th>Acciones</th></tr></thead>
+        <tbody id="pip-tbody"></tbody>
+      </table>
+      <div id="pip-empty" class="empty" style="display:none"><span class="empty-ico">📭</span>No hay contactos todavía.<br>Hacé clic en <strong>+ Agregar Contacto</strong> para empezar.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MENSAJES -->
+<div id="page-mensajes" class="page">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Mensajes de Outreach — Templates listos para copiar</span></div>
+    <div class="card-body">
+      <div class="tpl-card">
+        <div class="tpl-tag" style="background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bd)">HR / TALENT</div>
+        <div class="tpl-body">Hola [Nombre], soy Sofía de DGL Data Talent. Estamos ayudando a empresas del sector a incorporar perfiles de Talent & People con foco en transformación y datos.
+
+Vi tu perfil y me pareció muy relevante para una oportunidad que estamos manejando. ¿Te interesaría tener una charla breve esta semana?</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyTpl(this)">📋 Copiar</button>
+      </div>
+      <div class="tpl-card">
+        <div class="tpl-tag" style="background:var(--info-bg);color:var(--info);border:1px solid rgba(96,165,250,.25)">CEO / FOUNDER</div>
+        <div class="tpl-body">Hola [Nombre], soy Sofía de DGL Data Talent. Trabajo con founders que están construyendo equipos de datos y tecnología para escalar.
+
+¿Tienen algún desafío de hiring en el área técnica o de liderazgo? Me encantaría entender cómo están pensando el equipo para 2026.</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyTpl(this)">📋 Copiar</button>
+      </div>
+      <div class="tpl-card">
+        <div class="tpl-tag" style="background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.25)">CTO / CDO / CISO</div>
+        <div class="tpl-body">Hola [Nombre], soy Sofía de DGL Data Talent. Nos especializamos en perfiles técnicos de alto impacto — Data, Engineering, Seguridad — para empresas que están escalando en LATAM.
+
+¿Tenés algún rol difícil de cubrir o proyectás incorporaciones en los próximos meses?</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyTpl(this)">📋 Copiar</button>
+      </div>
+      <div class="tpl-card">
+        <div class="tpl-tag" style="background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.25)">DPO / LEGAL / COMPLIANCE</div>
+        <div class="tpl-body">Hola [Nombre], soy Sofía de DGL Data Talent. Trabajamos con empresas que buscan perfiles de Compliance, Legal y Privacidad de datos — especialmente en contextos regulados.
+
+¿Están evaluando sumar alguien al equipo en esas áreas?</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyTpl(this)">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTRATEGIA -->
+<div id="page-estrategia" class="page">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Estrategia de Outreach — Guía de acción para LinkedIn y mail</span></div>
+    <div class="card-body">
+      <div class="est-sec">
+        <div class="est-title">🎯 Objetivos de la semana</div>
+        <div class="est-item">Contactar 20 nuevos prospectos por LinkedIn (priorizá HR Managers y CTOs)</div>
+        <div class="est-item">Follow-up a todos los contactos con estado "Mensaje enviado" hace +5 días</div>
+        <div class="est-item">Cerrar al menos 3 reuniones de discovery esta semana</div>
+      </div>
+      <div class="est-sec">
+        <div class="est-title">📌 Secuencia de contacto</div>
+        <div class="est-item"><strong>Día 1:</strong> Mensaje inicial por LinkedIn (usá los templates de la solapa Mensajes)</div>
+        <div class="est-item"><strong>Día 4:</strong> Follow-up si no respondió — mencioná un caso o logro relevante</div>
+        <div class="est-item"><strong>Día 8:</strong> Último intento — propuesta de valor concreta + call-to-action claro</div>
+        <div class="est-item"><strong>Día 15+:</strong> Archivar o mover a "Descartado" si no hubo respuesta</div>
+      </div>
+      <div class="est-sec">
+        <div class="est-title">💡 Segmentos prioritarios</div>
+        <div class="est-item"><strong>Fintech & Compliance:</strong> Empresas con +40 años buscando transformación — encaje ideal para perfiles de People & HR con experiencia en datos</div>
+        <div class="est-item"><strong>Startups Serie A/B:</strong> Founders que necesitan su primer Head of People o Tech Lead</div>
+        <div class="est-item"><strong>Empresas con hiring difícil:</strong> Perfiles "unicorn" de Data Engineering, AI/ML, Ciberseguridad</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HR -->
+<div id="page-hr" class="page">
+  <div class="hr-tabs">
+    <button class="hr-tab active" data-hr="feedback">📝 Feedback de entrevistas</button>
+    <button class="hr-tab" data-hr="nuevo">✦ Nueva evaluación</button>
+  </div>
+
+  <div id="hr-feedback">
+    <div class="hr-metrics" id="hr-metrics"></div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Candidatos evaluados</span>
+        <button class="btn btn-primary btn-sm" onclick="showHR('nuevo')">+ Nueva evaluación</button>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="hr-search" placeholder="Buscar candidato..." oninput="renderCands()">
+        <select id="hr-frec" onchange="renderCands()">
+          <option value="">Todas las recomendaciones</option>
+          <option>Avanzar</option><option>En espera</option><option>Descartar</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Candidato</th><th>Posición</th><th>Entrevista</th><th>Score</th><th>Pretensión</th><th>Recomendación</th><th></th></tr></thead>
+          <tbody id="hr-tbody"></tbody>
+        </table>
+        <div id="hr-empty" class="empty" style="display:none"><span class="empty-ico">👥</span>Todavía no hay evaluaciones.<br>Hacé clic en <strong>+ Nueva evaluación</strong> para cargar la primera.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hr-nuevo" style="display:none">
+    <div class="ai-prog" id="ai-prog">
+      <div class="ai-prog-hd"><div class="spin"></div><span id="ai-lbl">Analizando con IA...</span></div>
+      <div class="ai-steps" id="ai-steps-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Datos del candidato <span class="ai-badge" id="ai-badge">✦ Pre-cargado con IA</span></span>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group"><label>Nombre completo</label><input id="f-nombre" type="text" placeholder="Ej: María Julieta Litta"></div>
+          <div class="form-group"><label>Posición</label><input id="f-posicion" type="text" placeholder="Ej: Head of People"></div>
+        </div>
+        <div class="form-row triple">
+          <div class="form-group"><label>Años de experiencia</label><input id="f-exp" type="text" placeholder="5"></div>
+          <div class="form-group"><label>Pretensión (USD/mes)</label><input id="f-salario" type="text" placeholder="3500–4000"></div>
+          <div class="form-group"><label>Modalidad</label>
+            <select id="f-mod"><option value="">— seleccionar —</option><option>Relación de dependencia</option><option>Contractor / monotributo</option><option>Indistinto</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>LinkedIn / email</label><input id="f-contacto" type="text" placeholder="linkedin.com/in/..."></div>
+          <div class="form-group"><label>Fecha de entrevista</label><input id="f-fecha" type="date"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Evaluación por dimensión</span></div>
+      <div class="card-body"><div class="score-grid" id="score-grid"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Notas cualitativas</span></div>
+      <div class="card-body">
+        <div class="form-row single"><div class="form-group"><label>Fortalezas detectadas</label><textarea id="f-fort" placeholder="Principales fortalezas..."></textarea></div></div>
+        <div class="form-row single"><div class="form-group"><label>Riesgos / áreas de mejora</label><textarea id="f-riesg" placeholder="Puntos a trabajar o riesgos..."></textarea></div></div>
+        <div class="form-row single"><div class="form-group"><label>Comentarios adicionales</label><textarea id="f-coment" placeholder="Observaciones de la entrevista..."></textarea></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Recomendación final</span></div>
+      <div class="card-body">
+        <div class="rec-grid">
+          <button class="rec-btn" id="rec-av" onclick="selRec('Avanzar')">✓ Avanzar</button>
+          <button class="rec-btn" id="rec-es" onclick="selRec('En espera')">⏳ En espera</button>
+          <button class="rec-btn" id="rec-di" onclick="selRec('Descartar')">✗ Descartar</button>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="showHR('feedback')">Cancelar</button>
+      <button class="btn btn-ai" id="ai-btn" onclick="runAI()">✦ Analizar con IA</button>
+      <button class="btn btn-primary" onclick="guardarCand()">💾 Guardar evaluación</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTACTO -->
+<div class="modal-ov" id="mod-contacto">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title" id="mod-title">Nuevo Contacto</span><button class="modal-x" onclick="closeModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre completo *</label><input id="c-nombre" type="text"></div>
+      <div class="form-group"><label>Empresa *</label><input id="c-empresa" type="text"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Responsable</label>
+        <select id="c-resp"><option>Sofía</option><option>Daniel</option><option>Facundo</option><option>Pablo</option></select>
+      </div>
+      <div class="form-group"><label>Cargo / Rol</label><input id="c-cargo" type="text"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Perfil</label>
+        <select id="c-perf"><option>HR / Talent</option><option>CEO / Founder</option><option>CTO / CDO / CISO</option><option>DPO / Legal / Compliance</option><option>Otro</option></select>
+      </div>
+      <div class="form-group"><label>LinkedIn URL</label><input id="c-li" type="text"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input id="c-email" type="email"></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="c-est"><option>Sin contactar</option><option>Mensaje enviado</option><option>Respondió</option><option>Reunión agendada</option><option>Propuesta enviada</option><option>Cerrado ✓</option><option>Descartado</option></select>
+      </div>
+    </div>
+    <div class="form-row single"><div class="form-group"><label>Fecha último contacto</label><input id="c-fecha" type="date"></div></div>
+    <div class="form-row single"><div class="form-group"><label>Notas</label><textarea id="c-notas"></textarea></div></div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarContacto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE CANDIDATO -->
+<div class="modal-ov" id="mod-cand"><div class="modal" id="mod-cand-body"></div></div>
+<!-- MODAL DETALLE CONTACTO -->
+<div class="modal-ov" id="mod-pip-det"><div class="modal" id="mod-pip-det-body"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// NAV
+const PAGES=['pipeline','mensajes','estrategia','hr'];
+document.querySelectorAll('.nav-tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const p=b.dataset.page;
+    PAGES.forEach(x=>document.getElementById('page-'+x).classList.toggle('active',x===p));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t===b));
+    if(p==='pipeline')renderPipeline();
+    if(p==='hr'){renderHRMetrics();showHR('feedback');}
+  });
+});
+document.querySelectorAll('.hr-tab').forEach(b=>b.addEventListener('click',()=>showHR(b.dataset.hr)));
+function showHR(sec){
+  ['feedback','nuevo'].forEach(s=>document.getElementById('hr-'+s).style.display=s===sec?'block':'none');
+  document.querySelectorAll('.hr-tab').forEach(b=>b.classList.toggle('active',b.dataset.hr===sec));
+  if(sec==='feedback')renderCands();
+  if(sec==='nuevo'){document.getElementById('ai-badge').classList.remove('show');document.getElementById('ai-prog').classList.remove('show');}
+}
+
+// STORAGE
+const S=(k,d)=>{try{localStorage.setItem(k,JSON.stringify(d));}catch(e){}};
+const L=(k,def=[])=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}};
+
+// PIPELINE
+let contacts=L('dgl_c_v3');
+let eIdx=-1;
+const EC={
+  'Sin contactar':'p-sc','Mensaje enviado':'p-me','Respondió':'p-re',
+  'Reunión agendada':'p-ru','Propuesta enviada':'p-pr','Cerrado ✓':'p-ce','Descartado':'p-de'
+};
+const ini=n=>(n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+function renderPipeline(){
+  const s=(document.getElementById('pip-search')?.value||'').toLowerCase();
+  const e=document.getElementById('pip-est')?.value||'';
+  const p=document.getElementById('pip-perf')?.value||'';
+  const r=document.getElementById('pip-resp')?.value||'';
+  const fil=contacts.filter(c=>{
+    const ms=(c.nombre||'').toLowerCase().includes(s)||(c.empresa||'').toLowerCase().includes(s);
+    return ms&&(!e||c.estado===e)&&(!p||c.perfil===p)&&(!r||c.responsable===r);
+  });
+  const tot=contacts.length,msj=contacts.filter(c=>c.estado==='Mensaje enviado').length;
+  const res=contacts.filter(c=>c.estado==='Respondió').length;
+  const reu=contacts.filter(c=>c.estado==='Reunión agendada').length;
+  const pro=contacts.filter(c=>c.estado==='Propuesta enviada').length;
+  document.getElementById('pip-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${tot}</div></div>
+    <div class="metric"><div class="metric-label">Msg enviado</div><div class="metric-value" style="color:var(--info)">${msj}</div></div>
+    <div class="metric"><div class="metric-label">Respondieron</div><div class="metric-value" style="color:var(--ok)">${res}</div></div>
+    <div class="metric"><div class="metric-label">Reunión agend.</div><div class="metric-value" style="color:var(--warn)">${reu}</div></div>
+    <div class="metric"><div class="metric-label">Propuesta env.</div><div class="metric-value" style="color:var(--accent)">${pro}</div></div>`;
+  const tb=document.getElementById('pip-tbody'),em=document.getElementById('pip-empty');
+  if(!fil.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=fil.map(c=>{
+    const ri=contacts.indexOf(c),cl=EC[c.estado]||'p-sc';
+    return`<tr><td><div class="name-cell"><div class="avatar">${ini(c.nombre)}</div><div><div style="font-weight:500">${c.nombre}</div><div style="font-size:11px;color:var(--muted)">${c.cargo||''}</div></div></div></td>
+    <td>${c.empresa||'—'}</td><td style="font-size:12px;color:var(--muted)">${c.perfil||'—'}</td>
+    <td style="font-size:12px">${c.responsable||'—'}</td>
+    <td><span class="pill ${cl}">${c.estado||'—'}</span></td>
+    <td style="max-width:140px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notas||'—'}</td>
+    <td style="font-size:12px;color:var(--muted)">${c.fecha||'—'}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn btn-ghost btn-sm" onclick="editC(${ri})">✏</button>
+      <button class="btn btn-ghost btn-sm" onclick="verC(${ri})">👁</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--err)" onclick="delC(${ri})">🗑</button>
+    </div></td></tr>`;
+  }).join('');
+}
+
+function openModal(idx=-1){
+  eIdx=idx;
+  document.getElementById('mod-title').textContent=idx>=0?'Editar Contacto':'Nuevo Contacto';
+  const c=idx>=0?contacts[idx]:{};
+  const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  sv('c-nombre',c.nombre);sv('c-empresa',c.empresa);sv('c-cargo',c.cargo);
+  sv('c-li',c.linkedin);sv('c-email',c.email);sv('c-fecha',c.fecha);sv('c-notas',c.notas);
+  const rs=document.getElementById('c-resp');if(rs)rs.value=c.responsable||'Sofía';
+  const pf=document.getElementById('c-perf');if(pf)pf.value=c.perfil||'HR / Talent';
+  const es=document.getElementById('c-est');if(es)es.value=c.estado||'Sin contactar';
+  document.getElementById('mod-contacto').classList.add('open');
+}
+function closeModal(){document.getElementById('mod-contacto').classList.remove('open');eIdx=-1;}
+function guardarContacto(){
+  const n=document.getElementById('c-nombre').value.trim(),e=document.getElementById('c-empresa').value.trim();
+  if(!n||!e){alert('Nombre y empresa son obligatorios.');return;}
+  const c={nombre:n,empresa:e,responsable:document.getElementById('c-resp').value,cargo:document.getElementById('c-cargo').value,
+    perfil:document.getElementById('c-perf').value,linkedin:document.getElementById('c-li').value,
+    email:document.getElementById('c-email').value,estado:document.getElementById('c-est').value,
+    fecha:document.getElementById('c-fecha').value,notas:document.getElementById('c-notas').value};
+  if(eIdx>=0)contacts[eIdx]=c;else contacts.push(c);
+  S('dgl_c_v3',contacts);closeModal();renderPipeline();toast(eIdx>=0?'Contacto actualizado':'Contacto guardado');
+}
+function editC(i){openModal(i);}
+function delC(i){if(!confirm('¿Eliminar este contacto?'))return;contacts.splice(i,1);S('dgl_c_v3',contacts);renderPipeline();toast('Contacto eliminado');}
+function verC(i){
+  const c=contacts[i],cl=EC[c.estado]||'p-sc';
+  document.getElementById('mod-pip-det-body').innerHTML=`
+    <div class="modal-hd"><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar-lg">${ini(c.nombre)}</div><div><div class="modal-title">${c.nombre}</div><div style="font-size:12px;color:var(--muted)">${c.cargo||''}${c.cargo&&c.empresa?' · ':''}${c.empresa||''}</div></div></div>
+    <button class="modal-x" onclick="document.getElementById('mod-pip-det').classList.remove('open')">×</button></div>
+    <div class="drow"><span class="dk">Estado</span><span class="dv"><span class="pill ${cl}">${c.estado}</span></span></div>
+    <div class="drow"><span class="dk">Responsable</span><span class="dv">${c.responsable||'—'}</span></div>
+    <div class="drow"><span class="dk">Perfil</span><span class="dv">${c.perfil||'—'}</span></div>
+    <div class="drow"><span class="dk">Último contacto</span><span class="dv">${c.fecha||'—'}</span></div>
+    ${c.linkedin?`<div class="drow"><span class="dk">LinkedIn</span><span class="dv" style="font-size:12px">${c.linkedin}</span></div>`:''}
+    ${c.email?`<div class="drow"><span class="dk">Email</span><span class="dv">${c.email}</span></div>`:''}
+    ${c.notas?`<div class="drow" style="flex-direction:column;align-items:flex-start;gap:4px"><span class="dk">Notas</span><span style="font-size:13px;margin-top:4px;line-height:1.5;color:var(--text)">${c.notas}</span></div>`:''}
+    <div class="modal-ft"><button class="btn btn-secondary" onclick="delC(${i});document.getElementById('mod-pip-det').classList.remove('open')">🗑 Eliminar</button>
+    <button class="btn btn-primary" onclick="document.getElementById('mod-pip-det').classList.remove('open');editC(${i})">✏ Editar</button></div>`;
+  document.getElementById('mod-pip-det').classList.add('open');
+}
+function exportCSV(){
+  if(!contacts.length){alert('No hay contactos para exportar.');return;}
+  const h=['Nombre','Empresa','Cargo','Perfil','Responsable','Estado','LinkedIn','Email','Último contacto','Notas'];
+  const rows=contacts.map(c=>[c.nombre,c.empresa,c.cargo,c.perfil,c.responsable,c.estado,c.linkedin,c.email,c.fecha,c.notas].map(v=>`"${(v||'').replace(/"/g,'""')}"`));
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='dgl_pipeline_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+function importCSV(evt){
+  const f=evt.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    const data=lines.slice(1).map(l=>{const cols=l.split(',').map(v=>v.replace(/^"|"$/g,'').replace(/""/g,'"'));
+      return{nombre:cols[0],empresa:cols[1],cargo:cols[2],perfil:cols[3],responsable:cols[4],estado:cols[5],linkedin:cols[6],email:cols[7],fecha:cols[8],notas:cols[9]};
+    }).filter(c=>c.nombre);
+    contacts=[...contacts,...data];S('dgl_c_v3',contacts);renderPipeline();toast(data.length+' contactos importados');
+  };r.readAsText(f);evt.target.value='';
+}
+
+// HR
+const DIMS=[
+  {key:'fit_cultural',label:'Fit cultural'},{key:'experiencia',label:'Experiencia relevante'},
+  {key:'liderazgo',label:'Liderazgo y gestión'},{key:'datos',label:'Manejo de datos / KPIs'},
+  {key:'comunicacion',label:'Comunicación'},{key:'autonomia',label:'Autonomía y proactividad'},
+  {key:'transformacion',label:'Gestión del cambio'},{key:'salario_fit',label:'Fit salarial'},
+];
+let hrSc={},curRec='',cands=L('dgl_cands_v2');
+
+function initScoreGrid(){
+  const g=document.getElementById('score-grid');if(!g)return;
+  g.innerHTML='';
+  DIMS.forEach(d=>{hrSc[d.key]=0;const item=document.createElement('div');item.className='score-item';
+    item.innerHTML=`<label>${d.label}</label><div class="stars-row" id="st-${d.key}"></div>`;
+    g.appendChild(item);drawStars(d.key);});
+}
+function drawStars(k){
+  const r=document.getElementById('st-'+k);if(!r)return;r.innerHTML='';
+  for(let i=1;i<=5;i++){const b=document.createElement('button');b.className='star-btn'+(i<=hrSc[k]?' on':'');
+    b.textContent='★';b.onclick=()=>{hrSc[k]=i;drawStars(k);};r.appendChild(b);}
+}
+function selRec(v){
+  curRec=v;
+  document.getElementById('rec-av').className='rec-btn'+(v==='Avanzar'?' s-av':'');
+  document.getElementById('rec-es').className='rec-btn'+(v==='En espera'?' s-es':'');
+  document.getElementById('rec-di').className='rec-btn'+(v==='Descartar'?' s-di':'');
+}
+function avg(c){const vs=DIMS.map(d=>c.scores[d.key]||0).filter(v=>v>0);if(!vs.length)return 0;return Math.round((vs.reduce((a,b)=>a+b,0)/vs.length)*10)/10;}
+function stH(n){return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
+function pRec(r){const cl=r==='Avanzar'?'p-av':r==='En espera'?'p-es':'p-di';return`<span class="pill ${cl}">${r}</span>`;}
+
+function renderHRMetrics(){
+  const tot=cands.length,av=cands.filter(c=>c.rec==='Avanzar').length;
+  const es=cands.filter(c=>c.rec==='En espera').length;
+  const sc=tot?(cands.reduce((a,c)=>a+avg(c),0)/tot).toFixed(1):'—';
+  document.getElementById('hr-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total evaluados</div><div class="metric-value">${tot}</div></div>
+    <div class="metric"><div class="metric-label">Para avanzar</div><div class="metric-value" style="color:var(--ok)">${av}</div></div>
+    <div class="metric"><div class="metric-label">En espera</div><div class="metric-value" style="color:var(--warn)">${es}</div></div>
+    <div class="metric"><div class="metric-label">Score promedio</div><div class="metric-value">${sc}<span style="font-size:14px;color:var(--muted)">/5</span></div></div>`;
+  renderCands();
+}
+function renderCands(){
+  const s=(document.getElementById('hr-search')?.value||'').toLowerCase();
+  const rf=document.getElementById('hr-frec')?.value||'';
+  const tb=document.getElementById('hr-tbody'),em=document.getElementById('hr-empty');
+  const fil=cands.filter(c=>{
+    const ms=(c.nombre||'').toLowerCase().includes(s)||(c.posicion||'').toLowerCase().includes(s);
+    return ms&&(!rf||c.rec===rf);
+  });
+  if(!fil.length){tb.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  tb.innerHTML=fil.map(c=>{const sc=avg(c),i=cands.indexOf(c);
+    return`<tr><td><div class="name-cell"><div class="avatar">${ini(c.nombre)}</div><div style="font-weight:500">${c.nombre}</div></div></td>
+    <td style="color:var(--muted);font-size:12px">${c.posicion||'—'}</td>
+    <td style="color:var(--muted);font-size:12px">${c.fecha||'—'}</td>
+    <td><div class="stars-sm">${stH(sc)}</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">${sc}/5</div></td>
+    <td style="font-size:12px;color:var(--muted)">${c.salario?c.salario+' USD':'—'}</td>
+    <td>${pRec(c.rec)}</td>
+    <td><div style="display:flex;gap:4px"><button class="btn btn-ghost btn-sm" onclick="verCand(${i})">👁 Ver</button>
+    <button class="btn btn-ghost btn-sm" style="color:var(--err)" onclick="delCand(${i})">🗑</button></div></td></tr>`;
+  }).join('');
+}
+function verCand(i){
+  const c=cands[i],sc=avg(c);
+  const sd=DIMS.map(d=>`<div class="sditem"><div class="sdlbl">${d.label}</div><div class="stars-sm" style="font-size:13px">${stH(c.scores[d.key]||0)}</div></div>`).join('');
+  document.getElementById('mod-cand-body').innerHTML=`
+    <div class="modal-hd"><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar-lg">${ini(c.nombre)}</div>
+    <div><div class="modal-title">${c.nombre}</div><div style="font-size:12px;color:var(--muted)">${c.posicion||''}</div></div></div>
+    <button class="modal-x" onclick="document.getElementById('mod-cand').classList.remove('open')">×</button></div>
+    <div class="drow"><span class="dk">Fecha</span><span class="dv">${c.fecha||'—'}</span></div>
+    <div class="drow"><span class="dk">Pretensión</span><span class="dv">${c.salario||'—'} USD/mes</span></div>
+    <div class="drow"><span class="dk">Modalidad</span><span class="dv">${c.modalidad||'—'}</span></div>
+    <div class="drow"><span class="dk">Contacto</span><span class="dv" style="font-size:12px">${c.contacto||'—'}</span></div>
+    <div class="drow"><span class="dk">Score promedio</span><span class="dv">${sc}/5</span></div>
+    <div class="drow"><span class="dk">Recomendación</span><span class="dv">${pRec(c.rec)}</span></div>
+    <div style="margin:14px 0 6px"><div class="sec-title">Por dimensión</div><div class="sdgrid">${sd}</div></div>
+    ${c.fortalezas?`<div class="drow" style="flex-direction:column;align-items:flex-start;gap:4px"><span class="dk">Fortalezas</span><span style="font-size:13px;margin-top:4px;line-height:1.5">${c.fortalezas}</span></div>`:''}
+    ${c.riesgos?`<div class="drow" style="flex-direction:column;align-items:flex-start;gap:4px"><span class="dk">Riesgos</span><span style="font-size:13px;margin-top:4px;line-height:1.5">${c.riesgos}</span></div>`:''}
+    ${c.comentarios?`<div class="drow" style="flex-direction:column;align-items:flex-start;gap:4px"><span class="dk">Comentarios</span><span style="font-size:13px;margin-top:4px;line-height:1.5">${c.comentarios}</span></div>`:''}
+    <div class="modal-ft"><button class="btn btn-secondary" onclick="delCand(${i});document.getElementById('mod-cand').classList.remove('open')">🗑 Eliminar</button>
+    <button class="btn btn-primary" onclick="document.getElementById('mod-cand').classList.remove('open')">Cerrar</button></div>`;
+  document.getElementById('mod-cand').classList.add('open');
+}
+function delCand(i){if(!confirm('¿Eliminar esta evaluación?'))return;cands.splice(i,1);S('dgl_cands_v2',cands);renderHRMetrics();toast('Evaluación eliminada');}
+function guardarCand(){
+  const n=document.getElementById('f-nombre').value.trim();
+  if(!n){alert('Ingresá el nombre.');return;}if(!curRec){alert('Seleccioná una recomendación.');return;}
+  cands.push({nombre:n,posicion:document.getElementById('f-posicion').value,
+    exp:document.getElementById('f-exp').value,salario:document.getElementById('f-salario').value,
+    modalidad:document.getElementById('f-mod').value,contacto:document.getElementById('f-contacto').value,
+    fecha:document.getElementById('f-fecha').value,fortalezas:document.getElementById('f-fort').value,
+    riesgos:document.getElementById('f-riesg').value,comentarios:document.getElementById('f-coment').value,
+    rec:curRec,scores:{...hrSc}});
+  S('dgl_cands_v2',cands);clearHR();showHR('feedback');renderHRMetrics();toast('Evaluación guardada');
+}
+function clearHR(){
+  ['f-nombre','f-posicion','f-exp','f-salario','f-contacto','f-fecha','f-fort','f-riesg','f-coment'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.classList.remove('aif');}});
+  const m=document.getElementById('f-mod');if(m){m.value='';m.classList.remove('aif');}
+  curRec='';selRec('');DIMS.forEach(d=>{hrSc[d.key]=0;drawStars(d.key);});
+}
+
+// AI
+const AI_ST=['Leyendo el CV...','Analizando la entrevista...','Evaluando fit con Worldsys...','Calculando scores...','Generando recomendación...'];
+const SYS=`Sos asistente RRHH para DGL Talent. Analizás CV y entrevistas para completar formularios de feedback para Worldsys (compliance, fintech, +40 años, transformación cultural).
+Devolvé ÚNICAMENTE un JSON válido sin texto adicional ni markdown:
+{"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":1,"experiencia":1,"liderazgo":1,"datos":1,"comunicacion":1,"autonomia":1,"transformacion":1,"salario_fit":1},"recomendacion":"Avanzar|En espera|Descartar"}`;
+const USR=`CV: María Julieta Litta — Head of Talent & People | Psicóloga
+AstroPay Head T&P (Abr 2026–hoy): RRHH end-to-end fintech, recruitment, onboarding, cultura, payroll.
+AstroPay TA Lead LATAM/EU (Nov 2025–Abr 2026): ATS, scorecards, HRIS con IA.
+Globant Sr TA LATAM/EU (Jun 2022–Nov 2025): IT complejos, People Analytics, automatización, coaching.
+Lumen Sr TA (Mar–Jun 2022). Accenture/MercadoLibre Brasil Analyst (Ene 2021–Feb 2022): 65+ roles, promoción 6 meses.
+Edu: Psicología USAL 2021, Diploma RRHH UB 2023, PNL 2022. Idiomas: ES nativo, EN avanzado, PT avanzado.
+Tools: Power BI, Looker Studio, HiBob, Deel, Notion, Claude Code, ChatGPT.
+ENTREVISTA: Entró en AstroPay 2022 por propuesta CEO. Lideró IA en recruiting y equipo multicultural LATAM. Salida por mal trato CEO (llamadas y mensajes fuera de horario, madrugadas y fines de semana). Extraña objetivos claros y equipo. Expectativa 3500–4000 USD como contractor (cubre obra social propia y marido). Prioriza bienestar. Interés genuino en transformación Worldsys y acompañamiento externo. 28 años, casada, sin hijos.
+ROL WORLDSYS: Head of People para empresa compliance +40 años en cambio generacional. Ordenar mandos medios, evaluaciones desempeño, procesos, cultura. Consultores externos 12 meses.`;
+
+async function runAI(){
+  const btn=document.getElementById('ai-btn');btn.disabled=true;
+  const prog=document.getElementById('ai-prog');prog.classList.add('show');
+  const sl=document.getElementById('ai-steps-list');
+  sl.innerHTML=AI_ST.map((s,i)=>`<div class="ai-step" id="ast-${i}"><div class="ai-step-ico">○</div><span>${s}</span></div>`).join('');
+  let si=0;
+  const iv=setInterval(()=>{
+    if(si>0){const p=document.getElementById('ast-'+(si-1));if(p){p.className='ai-step done';p.querySelector('.ai-step-ico').textContent='✓';}}
+    const cu=document.getElementById('ast-'+si);if(cu){cu.className='ai-step running';cu.querySelector('.ai-step-ico').innerHTML='<div class="spin"></div>';}
+    si++;if(si>=AI_ST.length)clearInterval(iv);
+  },700);
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:[{role:'user',content:USR}]})});
+    clearInterval(iv);
+    AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step done';s.querySelector('.ai-step-ico').textContent='✓';}});
+    document.getElementById('ai-lbl').textContent='Análisis completado ✓';
+    const data=await r.json();
+    const raw=data.content.find(b=>b.type==='text')?.text||'{}';
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    fillAI(parsed);
+  }catch(e){clearInterval(iv);document.getElementById('ai-lbl').textContent='Error de conexión. Completá manualmente.';}
+  btn.disabled=false;setTimeout(()=>prog.classList.remove('show'),3000);
+}
+function fillAI(d){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el&&v){el.value=v;el.classList.add('aif');}};
+  set('f-nombre',d.nombre);set('f-posicion',d.posicion);set('f-exp',d.exp);
+  set('f-salario',d.salario);set('f-contacto',d.contacto);
+  set('f-fort',d.fortalezas);set('f-riesg',d.riesgos);set('f-coment',d.comentarios);
+  const m=document.getElementById('f-mod');
+  if(d.modalidad&&m){for(let o of m.options){if(o.text.toLowerCase().includes((d.modalidad||'').toLowerCase().substring(0,8))){m.value=o.value;break;}}m.classList.add('aif');}
+  if(d.scores)DIMS.forEach(dim=>{if(d.scores[dim.key]){hrSc[dim.key]=d.scores[dim.key];drawStars(dim.key);}});
+  if(d.recomendacion)selRec(d.recomendacion);
+  document.getElementById('f-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('ai-badge').classList.add('show');
+  toast('Formulario pre-cargado con IA');
+}
+
+// UTILS
+function toast(msg){const t=document.getElementById('toast');t.textContent='✓ '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function copyTpl(btn){const txt=btn.previousElementSibling.textContent;navigator.clipboard.writeText(txt).then(()=>toast('Copiado al portapapeles'));}
+['mod-contacto','mod-cand','mod-pip-det'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('open');});
+});
+
+// INIT
+initScoreGrid();renderPipeline();renderHRMetrics();
+</script>
+</body>
+</html>
