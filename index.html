@@ -174,11 +174,66 @@ select option{background:var(--surface2);color:var(--text)}
 .activity-time{color:var(--muted2);font-size:11px;margin-left:auto;white-space:nowrap}
 .sec-title{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 
+/* Stage pipeline */
+.pipeline-bar{display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid var(--border2)}
+.pipeline-stage{flex:1;padding:10px 6px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;border-right:1px solid var(--border);transition:all .15s;display:flex;flex-direction:column;gap:4px}
+.pipeline-stage:last-child{border-right:none}
+.pipeline-stage:hover{background:var(--surface2)}
+.pstage-count{font-size:20px;font-weight:700}
+.pstage-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* Prospect stage pills */
+.s-prosp{background:rgba(130,130,160,.12);color:#9095b0;border:1px solid rgba(130,130,160,.25)}
+.s-cali{background:var(--info-bg);color:var(--info);border:1px solid rgba(96,165,250,.22)}
+.s-prop{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bd)}
+.s-nego{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.22)}
+.s-clie{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.22)}
+.s-perd{background:var(--err-bg);color:var(--err);border:1px solid rgba(248,113,113,.22)}
+
+/* Candidate client status pills */
+.p-pres{background:var(--info-bg);color:var(--info);border:1px solid rgba(96,165,250,.22)}
+.p-entr{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bd)}
+.p-ofer{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.22)}
+.p-cont{background:rgba(52,211,153,.18);color:#2dd486;border:1px solid rgba(52,211,153,.45);font-weight:700}
+tr.hired-row td{background:rgba(52,211,153,.04)}
+tr.hired-row td:first-child{border-left:3px solid var(--ok)}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;max-height:340px;overflow-y:auto;padding-right:4px}
+.tl-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px}
+.tl-body{flex:1}
+.tl-text{font-size:13px;color:var(--text);line-height:1.4}
+.tl-meta{font-size:11px;color:var(--muted2);margin-top:3px}
+.tl-file{display:inline-flex;align-items:center;gap:5px;font-size:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 9px;margin-top:5px;cursor:pointer;color:var(--muted)}
+.tl-file:hover{color:var(--text)}
+
+/* Billing */
+.bill-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bill-row:last-child{border-bottom:none}
+.bill-amount{font-weight:600;color:var(--text);min-width:80px}
+.p-pago{background:var(--ok-bg);color:var(--ok);border:1px solid rgba(52,211,153,.22)}
+.p-pend{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(251,191,36,.22)}
+.p-venc{background:var(--err-bg);color:var(--err);border:1px solid rgba(248,113,113,.22)}
+
+/* Large modal */
+.modal-lg{width:820px}
+.modal-xl{width:980px}
+.tab-inner{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab-inner-btn{padding:8px 16px;font-size:12px;cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);transition:color .15s;font-weight:500}
+.tab-inner-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-inner-pane{display:none}.tab-inner-pane.active{display:block}
+
+/* Report preview */
+.report-box{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:16px;font-size:12px;font-family:'Courier New',monospace;white-space:pre-wrap;line-height:1.6;color:var(--text);max-height:400px;overflow-y:auto}
+
 /* Responsive */
 @media(max-width:768px){
   .kpi-grid-5,.kpi-grid-4{grid-template-columns:repeat(2,1fr)}
   .form-row,.form-row.triple{grid-template-columns:1fr}
   .dash-row{grid-template-columns:1fr}
+  .pipeline-bar{flex-wrap:wrap}
 }
 @media(max-width:480px){
   .kpi-grid-5,.kpi-grid-4,.kpi-grid-3{grid-template-columns:1fr 1fr}
@@ -198,9 +253,10 @@ select option{background:var(--surface2);color:var(--text)}
 <nav class="nav-tabs">
   <button class="nav-tab active" data-page="dashboard">🏠 Dashboard</button>
   <button class="nav-tab" data-page="contactos">📋 Contactos</button>
-  <button class="nav-tab" data-page="candidatos">👤 Candidatos</button>
+  <button class="nav-tab" data-page="prospectos">🎯 BD Pipeline</button>
   <button class="nav-tab" data-page="clientes">🏢 Clientes</button>
   <button class="nav-tab" data-page="posiciones">🔍 Posiciones</button>
+  <button class="nav-tab" data-page="candidatos">👤 Candidatos</button>
   <button class="nav-tab" data-page="evaluacion">✦ Nueva Evaluación</button>
 </nav>
 
@@ -249,6 +305,43 @@ select option{background:var(--surface2);color:var(--text)}
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ PROSPECTOS -->
+<div id="page-prospectos" class="page">
+  <div class="pipeline-bar" id="pros-pipeline-bar"></div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pipeline de Prospectos</span>
+      <div class="card-actions">
+        <button class="btn btn-primary btn-sm" onclick="openProspectoModal()">+ Nuevo Prospecto</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="pros-search" placeholder="Buscar empresa o contacto…" oninput="renderProspectos()">
+      <select id="pros-etapa" onchange="renderProspectos()">
+        <option value="">Todas las etapas</option>
+        <option value="prospecto">Prospecto</option>
+        <option value="calificado">Calificado</option>
+        <option value="propuesta">Propuesta enviada</option>
+        <option value="negociacion">Negociación</option>
+        <option value="cliente">Cliente ✓</option>
+        <option value="perdido">Perdido</option>
+      </select>
+      <select id="pros-resp" onchange="renderProspectos()">
+        <option value="">Todos los responsables</option>
+        <option value="sofia">Sofía</option><option value="daniel">Daniel</option>
+        <option value="facundo">Facundo</option><option value="pablo">Pablo</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Empresa</th><th>Contacto</th><th>Responsable</th><th>Etapa</th><th>Origen</th><th>Último movimiento</th><th>Facturación</th><th></th></tr></thead>
+        <tbody id="pros-tbody"></tbody>
+      </table>
+      <div id="pros-empty" class="empty" style="display:none"><span class="empty-ico">🎯</span>No hay prospectos.<br>Hacé clic en <strong>+ Nuevo Prospecto</strong> para empezar.</div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="kpi-grid kpi-grid-5" id="dash-kpis"></div>
@@ -292,10 +385,17 @@ select option{background:var(--surface2);color:var(--text)}
       <select id="cand-pos-f" onchange="renderCands()">
         <option value="">Todas las posiciones</option>
       </select>
+      <select id="cand-cli-st" onchange="renderCands()">
+        <option value="">Todos los estados</option>
+        <option value="presentado">Presentado</option>
+        <option value="entrevistado">Entrevistado</option>
+        <option value="ofertado">Con oferta</option>
+        <option value="contratado">Contratado ✓</option>
+      </select>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Candidato</th><th>Posición</th><th>Entrevista</th><th>Score</th><th>Pretensión</th><th>Modalidad</th><th>Recomendación</th><th></th></tr></thead>
+        <thead><tr><th>Candidato</th><th>Posición</th><th>Entrevista</th><th>Score</th><th>Estado proceso</th><th>Recomendación</th><th></th></tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
       <div id="cand-empty" class="empty" style="display:none"><span class="empty-ico">👤</span>No hay candidatos evaluados.<br>Usá <strong>Nueva Evaluación</strong> para cargar el primero.</div>
@@ -324,6 +424,7 @@ select option{background:var(--surface2);color:var(--text)}
       <table>
         <thead><tr><th>Empresa</th><th>Industria</th><th>Contacto</th><th>Email</th><th>Posiciones abiertas</th><th>Estado</th><th>Notas</th><th></th></tr></thead>
         <tbody id="cli-tbody"></tbody>
+        <!-- rows injected by renderClients() — Ver detalle button opens openClientDetail(id) -->
       </table>
       <div id="cli-empty" class="empty" style="display:none"><span class="empty-ico">🏢</span>No hay clientes cargados.<br>Hacé clic en <strong>+ Nuevo Cliente</strong> para empezar.</div>
     </div>
@@ -538,6 +639,133 @@ select option{background:var(--surface2);color:var(--text)}
   </div>
 </div>
 
+<!-- Modal: Prospecto -->
+<div class="modal-ov" id="mod-prospecto">
+  <div class="modal modal-lg">
+    <div class="modal-hd"><span class="modal-title" id="pros-modal-title">Nuevo Prospecto</span><button class="modal-x" onclick="closeProspectoModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Empresa *</label><input id="pro-empresa" type="text" placeholder="Ej: Banco Galicia"></div>
+      <div class="form-group"><label>Industria</label><input id="pro-industria" type="text" placeholder="Fintech, Banca, Retail..."></div>
+    </div>
+    <div class="form-row triple">
+      <div class="form-group"><label>Contacto principal *</label><input id="pro-contacto" type="text" placeholder="Nombre y apellido"></div>
+      <div class="form-group"><label>Cargo del contacto</label><input id="pro-cargo" type="text" placeholder="CHRO, CEO..."></div>
+      <div class="form-group"><label>Email</label><input id="pro-email" type="email" placeholder="nombre@empresa.com"></div>
+    </div>
+    <div class="form-row triple">
+      <div class="form-group"><label>Teléfono</label><input id="pro-tel" type="text" placeholder="+54 9 11..."></div>
+      <div class="form-group"><label>LinkedIn empresa</label><input id="pro-linkedin" type="url" placeholder="https://linkedin.com/company/..."></div>
+      <div class="form-group"><label>Origen del lead</label>
+        <select id="pro-origen"><option value="">—</option><option>Referido</option><option>LinkedIn</option><option>Evento</option><option>Inbound web</option><option>Base propia</option><option>Otro</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Responsable DGL *</label>
+        <select id="pro-resp"><option value="sofia">Sofía Mónaco</option><option value="daniel">Daniel Monastersky</option><option value="facundo">Facundo Malaureille</option><option value="pablo">Pablo Mlynkiewicz</option></select>
+      </div>
+      <div class="form-group"><label>Etapa</label>
+        <select id="pro-etapa">
+          <option value="prospecto">Prospecto</option><option value="calificado">Calificado</option>
+          <option value="propuesta">Propuesta enviada</option><option value="negociacion">Negociación</option>
+          <option value="cliente">Cliente ✓</option><option value="perdido">Perdido</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha de último contacto</label><input id="pro-fecha" type="date"></div>
+      <div class="form-group"><label>Valor estimado (USD/mes)</label><input id="pro-valor" type="text" placeholder="Ej: 3000"></div>
+    </div>
+    <div class="form-row single"><div class="form-group"><label>Notas iniciales</label><textarea id="pro-notas" placeholder="Contexto, necesidades detectadas, próximo paso..."></textarea></div></div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeProspectoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarProspecto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Timeline / Historial -->
+<div class="modal-ov" id="mod-timeline">
+  <div class="modal modal-lg">
+    <div class="modal-hd"><span class="modal-title" id="tl-title">Historial</span><button class="modal-x" onclick="closeTimeline()">×</button></div>
+    <div class="timeline" id="tl-list"></div>
+    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+      <div class="form-row single" style="margin-bottom:8px"><div class="form-group">
+        <label>Agregar nota</label>
+        <textarea id="tl-new-text" placeholder="Escribí el próximo paso, resultado de llamada, acuerdo..." style="min-height:60px"></textarea>
+      </div></div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Adjuntar<input type="file" id="tl-file-input" style="display:none" onchange="handleTlFile(event)"></label>
+          <span id="tl-file-name" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="tl-author" style="font-size:13px;padding:7px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text)">
+            <option value="sofia">Sofía</option><option value="daniel">Daniel</option>
+            <option value="facundo">Facundo</option><option value="pablo">Pablo</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="addTimelineEntry()">Agregar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cobranza -->
+<div class="modal-ov" id="mod-billing">
+  <div class="modal modal-lg">
+    <div class="modal-hd"><span class="modal-title" id="bill-title">Cobranza</span><button class="modal-x" onclick="closeBilling()">×</button></div>
+    <div id="bill-summary" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap"></div>
+    <div id="bill-list" style="margin-bottom:16px"></div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <div class="sec-title" style="margin-bottom:10px">Agregar factura</div>
+      <div class="form-row triple">
+        <div class="form-group"><label>Período (mes/año)</label><input id="bill-mes" type="month" placeholder="2025-01"></div>
+        <div class="form-group"><label>Monto (USD)</label><input id="bill-monto" type="number" placeholder="3000" min="0"></div>
+        <div class="form-group"><label>Estado</label>
+          <select id="bill-est"><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option><option value="vencido">Vencido</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Fecha vencimiento</label><input id="bill-venc" type="date"></div>
+        <div class="form-group"><label>Descripción</label><input id="bill-desc" type="text" placeholder="Búsqueda Head of Data..."></div>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="addBillingRecord()">Agregar factura</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Detalle cliente (dashboard posiciones + candidatos) -->
+<div class="modal-ov" id="mod-client-detail">
+  <div class="modal modal-xl">
+    <div class="modal-hd">
+      <span class="modal-title" id="cd-title">Dashboard Cliente</span>
+      <button class="modal-x" onclick="closeClientDetail()">×</button>
+    </div>
+    <div class="tab-inner" id="cd-tabs">
+      <button class="tab-inner-btn active" onclick="switchCdTab('info')">Info</button>
+      <button class="tab-inner-btn" onclick="switchCdTab('posiciones')">Búsquedas</button>
+      <button class="tab-inner-btn" onclick="switchCdTab('candidatos')">Candidatos</button>
+      <button class="tab-inner-btn" onclick="switchCdTab('cobranza')">Cobranza</button>
+    </div>
+    <div id="cd-pane-info" class="tab-inner-pane active"></div>
+    <div id="cd-pane-posiciones" class="tab-inner-pane"></div>
+    <div id="cd-pane-candidatos" class="tab-inner-pane"></div>
+    <div id="cd-pane-cobranza" class="tab-inner-pane"></div>
+  </div>
+</div>
+
+<!-- Modal: Reporte estandarizado de candidato -->
+<div class="modal-ov" id="mod-report">
+  <div class="modal modal-lg">
+    <div class="modal-hd"><span class="modal-title" id="rep-title">Reporte de Candidato</span><button class="modal-x" onclick="closeReport()">×</button></div>
+    <div id="rep-content" class="report-box"></div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="copyReport()">📋 Copiar</button>
+      <button class="btn btn-secondary" onclick="closeReport()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -549,15 +777,18 @@ const S = (k, d) => { try { localStorage.setItem(k, JSON.stringify(d)); } catch(
 const L = (k, def=[]) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e) { return def; } };
 
 // ─── DATA ─────────────────────────────────────────────────────
-let cands     = L('dgl_cands_v2');
-let clients   = L('dgl_clients_v1');
-let positions = L('dgl_positions_v1');
+let cands       = L('dgl_cands_v2');
+let clients     = L('dgl_clients_v1');
+let positions   = L('dgl_positions_v1');
 let crmContacts = L('dgl_crm_contacts');
-let crmEditId = null;
-let crmSyncing = false;
+let prospectos  = L('dgl_prospectos_v1');
+let billing     = L('dgl_billing_v1');
+let timelines   = L('dgl_timelines_v1', {});
+let crmEditId   = null;
+let crmSyncing  = false;
 
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['dashboard','contactos','candidatos','clientes','posiciones','evaluacion'];
+const PAGES = ['dashboard','contactos','prospectos','candidatos','clientes','posiciones','evaluacion'];
 document.querySelectorAll('.nav-tab').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
@@ -565,6 +796,7 @@ document.querySelectorAll('.nav-tab').forEach(b => {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t===b));
     if (p==='dashboard')   renderDashboard();
     if (p==='contactos')   renderCrm();
+    if (p==='prospectos')  renderProspectos();
     if (p==='candidatos')  renderCands();
     if (p==='clientes')    renderClients();
     if (p==='posiciones')  renderPositions();
@@ -604,12 +836,23 @@ function renderDashboard() {
   const posAbi = positions.filter(p=>p.estado==='Abierta'||p.estado==='En proceso').length;
   const sc  = tot ? (cands.reduce((a,c)=>a+avg(c),0)/tot).toFixed(1) : '—';
 
+  const prosAct = prospectos.filter(p=>p.etapa!=='perdido'&&p.etapa!=='cliente').length;
+  const prosCliente = prospectos.filter(p=>p.etapa==='cliente').length;
+  const billPend = billing.filter(b=>b.estado==='pendiente').reduce((a,b)=>a+Number(b.monto||0),0);
+  const contratados = cands.filter(c=>c.clientStatus==='contratado').length;
   document.getElementById('dash-kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-label">Contactos pipeline</div><div class="kpi-value">${crmContacts.length}</div></div>
-    <div class="kpi"><div class="kpi-label">Candidatos evaluados</div><div class="kpi-value" style="color:var(--accent)">${tot}</div></div>
-    <div class="kpi"><div class="kpi-label">Para avanzar</div><div class="kpi-value" style="color:var(--ok)">${av}</div></div>
-    <div class="kpi"><div class="kpi-label">Clientes activos</div><div class="kpi-value" style="color:var(--info)">${cliAct}</div></div>
-    <div class="kpi"><div class="kpi-label">Posiciones abiertas</div><div class="kpi-value" style="color:var(--warn)">${posAbi}</div></div>`;
+    <div class="kpi"><div class="kpi-label">Prospectos activos</div><div class="kpi-value">${prosAct}</div></div>
+    <div class="kpi"><div class="kpi-label">Clientes activos</div><div class="kpi-value" style="color:var(--ok)">${cliAct + prosCliente}</div></div>
+    <div class="kpi"><div class="kpi-label">Posiciones abiertas</div><div class="kpi-value" style="color:var(--accent)">${posAbi}</div></div>
+    <div class="kpi"><div class="kpi-label">Candidatos evaluados</div><div class="kpi-value" style="color:var(--info)">${tot}</div></div>
+    <div class="kpi"><div class="kpi-label">Contratados</div><div class="kpi-value" style="color:#2dd486">${contratados}</div></div>
+    ${billPend?`<div class="kpi" style="grid-column:span 1"><div class="kpi-label">Cobranza pendiente</div><div class="kpi-value" style="color:var(--warn);font-size:18px">USD ${billPend.toLocaleString()}</div></div>`:''}`;
+  document.getElementById('dash-kpis').className = 'kpi-grid kpi-grid-' + (billPend?'6':'5');
+  // Fix grid class for 6 items
+  if (billPend) {
+    const g = document.getElementById('dash-kpis');
+    g.style.gridTemplateColumns = 'repeat(6,1fr)';
+  }
 
   const recCounts = {Avanzar:0,'En espera':0,Descartar:0};
   cands.forEach(c => { if (recCounts[c.rec]!==undefined) recCounts[c.rec]++; });
@@ -641,12 +884,24 @@ function renderDashboard() {
 }
 
 // ─── CANDIDATOS ───────────────────────────────────────────────
-function renderCands() {
-  const s  = (document.getElementById('cand-search')?.value||'').toLowerCase();
-  const rf = document.getElementById('cand-frec')?.value||'';
-  const pf = document.getElementById('cand-pos-f')?.value||'';
+const CAND_CLI_ST = {
+  '':           {label:'—',           cls:''},
+  presentado:   {label:'Presentado',  cls:'p-pres'},
+  entrevistado: {label:'Entrevistado',cls:'p-entr'},
+  ofertado:     {label:'Con oferta',  cls:'p-ofer'},
+  contratado:   {label:'Contratado ✓',cls:'p-cont'},
+};
+function pCliSt(s) {
+  const m = CAND_CLI_ST[s||'']||CAND_CLI_ST[''];
+  return m.cls ? `<span class="pill ${m.cls}">${m.label}</span>` : `<span style="color:var(--muted2);font-size:12px">—</span>`;
+}
 
-  // Populate position filter
+function renderCands() {
+  const s   = (document.getElementById('cand-search')?.value||'').toLowerCase();
+  const rf  = document.getElementById('cand-frec')?.value||'';
+  const pf  = document.getElementById('cand-pos-f')?.value||'';
+  const csf = document.getElementById('cand-cli-st')?.value||'';
+
   const posF = document.getElementById('cand-pos-f');
   if (posF) {
     const cur = posF.value;
@@ -657,35 +912,36 @@ function renderCands() {
 
   const fil = cands.filter(c => {
     const ms = (c.nombre||'').toLowerCase().includes(s)||(c.posicion||'').toLowerCase().includes(s);
-    return ms && (!rf||c.rec===rf) && (!pf||c.posicion===pf);
+    return ms && (!rf||c.rec===rf) && (!pf||c.posicion===pf) && (!csf||(c.clientStatus||'')=== csf);
   });
 
   const tot = cands.length, av = cands.filter(c=>c.rec==='Avanzar').length;
-  const es = cands.filter(c=>c.rec==='En espera').length;
+  const cont = cands.filter(c=>c.clientStatus==='contratado').length;
   const sc = tot ? (cands.reduce((a,c)=>a+avg(c),0)/tot).toFixed(1) : '—';
 
   document.getElementById('cand-kpis').innerHTML = `
     <div class="kpi"><div class="kpi-label">Total evaluados</div><div class="kpi-value">${tot}</div></div>
     <div class="kpi"><div class="kpi-label">Para avanzar</div><div class="kpi-value" style="color:var(--ok)">${av}</div></div>
-    <div class="kpi"><div class="kpi-label">En espera</div><div class="kpi-value" style="color:var(--warn)">${es}</div></div>
+    <div class="kpi"><div class="kpi-label">Contratados</div><div class="kpi-value" style="color:#2dd486">${cont}</div></div>
     <div class="kpi"><div class="kpi-label">Score promedio</div><div class="kpi-value">${sc}<span style="font-size:14px;color:var(--muted)">${tot?'/5':''}</span></div></div>`;
 
   const tb = document.getElementById('cand-tbody');
   const em = document.getElementById('cand-empty');
   if (!fil.length) { tb.innerHTML=''; em.style.display='block'; return; }
   em.style.display='none';
-  tb.innerHTML = fil.map((c,_) => {
+  tb.innerHTML = fil.map((c) => {
     const i = cands.indexOf(c), sc = avg(c);
-    return `<tr>
+    const hired = c.clientStatus==='contratado';
+    return `<tr class="${hired?'hired-row':''}">
       <td><div class="name-cell"><div class="avatar">${ini(c.nombre)}</div><div style="font-weight:500">${c.nombre}</div></div></td>
       <td style="color:var(--muted);font-size:12px">${c.posicion||'—'}</td>
       <td style="color:var(--muted);font-size:12px">${c.fecha||'—'}</td>
       <td><div class="stars-sm">${stH(sc)}</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">${sc}/5</div></td>
-      <td style="font-size:12px;color:var(--muted)">${c.salario?c.salario+' USD':'—'}</td>
-      <td style="font-size:12px;color:var(--muted)">${c.modalidad||'—'}</td>
+      <td>${pCliSt(c.clientStatus)}</td>
       <td>${pRec(c.rec)}</td>
       <td><div style="display:flex;gap:4px">
         <button class="btn btn-ghost btn-sm" onclick="verCand(${i})">👁 Ver</button>
+        <button class="btn btn-ghost btn-sm" onclick="openReport(${i})">📄</button>
         <button class="btn btn-danger btn-sm" onclick="delCand(${i})">🗑</button>
       </div></td></tr>`;
   }).join('');
@@ -774,6 +1030,7 @@ function renderClients() {
       <td>${pEst(c.estado)}</td>
       <td style="max-width:160px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notas||'—'}</td>
       <td><div style="display:flex;gap:4px">
+        <button class="btn btn-ghost btn-sm" onclick="openClientDetail('${c.id}')">📊</button>
         <button class="btn btn-ghost btn-sm" onclick="openClientModal(${i})">✏</button>
         <button class="btn btn-danger btn-sm" onclick="delCliente(${i})">🗑</button>
       </div></td></tr>`;
@@ -1276,10 +1533,526 @@ function importCrmCSV(evt) {
   r.readAsText(f,'UTF-8');
 }
 
+// ─── PROSPECTOS ───────────────────────────────────────────────
+const STAGES = {
+  prospecto:   {label:'Prospecto',       cls:'s-prosp'},
+  calificado:  {label:'Calificado',      cls:'s-cali'},
+  propuesta:   {label:'Propuesta env.',  cls:'s-prop'},
+  negociacion: {label:'Negociación',     cls:'s-nego'},
+  cliente:     {label:'Cliente ✓',       cls:'s-clie'},
+  perdido:     {label:'Perdido',         cls:'s-perd'},
+};
+const STAGE_ORDER = ['prospecto','calificado','propuesta','negociacion','cliente','perdido'];
+const OWN_LABEL = {sofia:'Sofía',daniel:'Daniel',facundo:'Facundo',pablo:'Pablo'};
+let prosIdx = null;
+
+function pStage(e) {
+  const m = STAGES[e]||{label:e,cls:'s-prosp'};
+  return `<span class="pill ${m.cls}">${m.label}</span>`;
+}
+
+function renderProspectos() {
+  const s  = (document.getElementById('pros-search')?.value||'').toLowerCase();
+  const ef = document.getElementById('pros-etapa')?.value||'';
+  const rf = document.getElementById('pros-resp')?.value||'';
+
+  const fil = prospectos.filter(p => {
+    const ms = (p.empresa+p.contacto+(p.industria||'')).toLowerCase().includes(s);
+    return ms && (!ef||p.etapa===ef) && (!rf||p.resp===rf);
+  });
+
+  // pipeline bar
+  const bar = document.getElementById('pros-pipeline-bar');
+  if (bar) {
+    bar.innerHTML = STAGE_ORDER.map(k => {
+      const cnt = prospectos.filter(p=>p.etapa===k).length;
+      const st = STAGES[k];
+      return `<div class="pipeline-stage" onclick="filterProsStage('${k}')">
+        <div class="pstage-count" style="color:${k==='cliente'?'var(--ok)':k==='perdido'?'var(--err)':'var(--text)'}">${cnt}</div>
+        <div class="pstage-label">${st.label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const tb = document.getElementById('pros-tbody');
+  const em = document.getElementById('pros-empty');
+  if (!fil.length) { tb.innerHTML=''; em.style.display='block'; return; }
+  em.style.display='none';
+
+  tb.innerHTML = fil.map(p => {
+    const tl = (timelines[p.id]||[]);
+    const lastEntry = tl.length ? tl[tl.length-1] : null;
+    const lastDate  = lastEntry ? lastEntry.date.slice(0,10) : (p.fecha||'—');
+    const billAmt   = billing.filter(b=>b.clientId===p.id).reduce((a,b)=>a+Number(b.monto||0),0);
+    const billPend  = billing.filter(b=>b.clientId===p.id&&b.estado==='pendiente').length;
+    return `<tr>
+      <td><div class="name-cell"><div class="avatar">${ini(p.empresa)}</div><div>
+        <div style="font-weight:500">${p.empresa}</div>
+        <div style="font-size:11px;color:var(--muted2)">${p.industria||''}</div>
+      </div></div></td>
+      <td><div style="font-size:13px">${p.contacto||'—'}</div>
+          <div style="font-size:11px;color:var(--muted2)">${p.cargo||''}</div>
+          ${p.email?`<div style="font-size:11px;color:var(--info)">${p.email}</div>`:''}
+          ${p.tel?`<div style="font-size:11px;color:var(--muted2)">${p.tel}</div>`:''}
+      </td>
+      <td style="font-size:12px">${OWN_LABEL[p.resp]||p.resp||'—'}</td>
+      <td>${pStage(p.etapa)}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.origen||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${lastDate}<div style="font-size:11px;color:var(--muted2)">${tl.length} nota${tl.length!==1?'s':''}</div></td>
+      <td><div style="font-size:12px;color:${billPend?'var(--warn)':'var(--muted)'}">${billAmt?'USD '+billAmt.toLocaleString():'—'}${billPend?' ⚠':''}
+      </div></td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="openTimeline('${p.id}','${p.empresa}')">📝 Historial</button>
+        <button class="btn btn-ghost btn-sm" onclick="openBilling('${p.id}','${p.empresa}')">💰</button>
+        <button class="btn btn-ghost btn-sm" onclick="openProspectoModal('${p.id}')">✏</button>
+        ${p.etapa!=='cliente'?`<button class="btn btn-ghost btn-sm" onclick="convertirACliente('${p.id}')" title="Convertir a cliente">→🏢</button>`:''}
+        <button class="btn btn-danger btn-sm" onclick="delProspecto('${p.id}')">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+
+function filterProsStage(k) {
+  const sel = document.getElementById('pros-etapa');
+  if (sel) { sel.value = sel.value===k?'':k; renderProspectos(); }
+}
+
+function openProspectoModal(id) {
+  prosIdx = id||null;
+  document.getElementById('pros-modal-title').textContent = id ? 'Editar Prospecto' : 'Nuevo Prospecto';
+  const p = id ? prospectos.find(x=>x.id===id) : {};
+  const sv = (el,v) => { const e=document.getElementById(el); if(e) e.value=v||''; };
+  sv('pro-empresa',p.empresa); sv('pro-industria',p.industria);
+  sv('pro-contacto',p.contacto); sv('pro-cargo',p.cargo);
+  sv('pro-email',p.email); sv('pro-tel',p.tel);
+  sv('pro-linkedin',p.linkedin); sv('pro-notas',p.notas);
+  sv('pro-valor',p.valor);
+  sv('pro-fecha',p.fecha||new Date().toISOString().slice(0,10));
+  const or=document.getElementById('pro-origen'); if(or) or.value=p.origen||'';
+  const rs=document.getElementById('pro-resp');   if(rs) rs.value=p.resp||'sofia';
+  const et=document.getElementById('pro-etapa');  if(et) et.value=p.etapa||'prospecto';
+  document.getElementById('mod-prospecto').classList.add('open');
+}
+function closeProspectoModal() { document.getElementById('mod-prospecto').classList.remove('open'); prosIdx=null; }
+function guardarProspecto() {
+  const emp = document.getElementById('pro-empresa').value.trim();
+  if (!emp) { alert('La empresa es obligatoria.'); return; }
+  const p = {
+    id:       prosIdx||uid(),
+    empresa:  emp,
+    industria:document.getElementById('pro-industria').value,
+    contacto: document.getElementById('pro-contacto').value,
+    cargo:    document.getElementById('pro-cargo').value,
+    email:    document.getElementById('pro-email').value,
+    tel:      document.getElementById('pro-tel').value,
+    linkedin: document.getElementById('pro-linkedin').value,
+    origen:   document.getElementById('pro-origen').value,
+    resp:     document.getElementById('pro-resp').value,
+    etapa:    document.getElementById('pro-etapa').value,
+    valor:    document.getElementById('pro-valor').value,
+    notas:    document.getElementById('pro-notas').value,
+    fecha:    document.getElementById('pro-fecha').value,
+  };
+  if (prosIdx) { const i=prospectos.findIndex(x=>x.id===prosIdx); prospectos[i]=p; }
+  else prospectos.unshift(p);
+  S('dgl_prospectos_v1', prospectos);
+
+  // auto-add first timeline note if notas present and new record
+  if (!prosIdx && p.notas) {
+    if (!timelines[p.id]) timelines[p.id]=[];
+    timelines[p.id].push({id:uid(), date:new Date().toISOString(), author:p.resp||'sofia', text:p.notas, type:'nota'});
+    S('dgl_timelines_v1', timelines);
+  }
+  closeProspectoModal();
+  renderProspectos();
+  toast(prosIdx ? 'Prospecto actualizado' : 'Prospecto guardado');
+}
+function delProspecto(id) {
+  if (!confirm('¿Eliminar este prospecto?')) return;
+  prospectos = prospectos.filter(p=>p.id!==id);
+  S('dgl_prospectos_v1', prospectos);
+  renderProspectos();
+  toast('Prospecto eliminado');
+}
+function convertirACliente(id) {
+  const p = prospectos.find(x=>x.id===id);
+  if (!p) return;
+  if (!confirm(`¿Convertir "${p.empresa}" a cliente activo?`)) return;
+  // update stage
+  p.etapa = 'cliente';
+  S('dgl_prospectos_v1', prospectos);
+  // add to clients if not already there
+  if (!clients.find(c=>c.empresa.toLowerCase()===p.empresa.toLowerCase())) {
+    clients.push({
+      id:uid(), empresa:p.empresa, industria:p.industria,
+      contacto:p.contacto, cargo:p.cargo, email:p.email, tel:p.tel,
+      resp:OWN_LABEL[p.resp]||p.resp||'Sofía', estado:'Activo',
+      notas:p.notas, fecha:new Date().toISOString().split('T')[0],
+    });
+    S('dgl_clients_v1', clients);
+  }
+  // timeline note
+  if (!timelines[id]) timelines[id]=[];
+  timelines[id].push({id:uid(),date:new Date().toISOString(),author:p.resp||'sofia',text:'Convertido a cliente activo.',type:'hito'});
+  S('dgl_timelines_v1', timelines);
+  renderProspectos();
+  toast('Convertido a cliente ✓');
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────────
+let tlEntityId = null;
+let tlPendingFile = null;
+
+function openTimeline(entityId, name) {
+  tlEntityId = entityId;
+  tlPendingFile = null;
+  document.getElementById('tl-title').textContent = '📝 Historial · ' + name;
+  document.getElementById('tl-new-text').value = '';
+  document.getElementById('tl-file-name').textContent = '';
+  renderTimeline();
+  document.getElementById('mod-timeline').classList.add('open');
+}
+function closeTimeline() { document.getElementById('mod-timeline').classList.remove('open'); tlEntityId=null; tlPendingFile=null; }
+
+function renderTimeline() {
+  const entries = (timelines[tlEntityId]||[]).slice().reverse();
+  const list = document.getElementById('tl-list');
+  if (!entries.length) { list.innerHTML='<div class="empty" style="padding:20px 0"><span>Sin notas todavía.</span></div>'; return; }
+  list.innerHTML = entries.map(e => {
+    const dot = e.type==='hito'?'background:var(--ok)':'background:var(--accent)';
+    const fileHtml = e.file ? `<div class="tl-file" onclick="downloadTlFile('${e.id}','${tlEntityId}')">📎 ${e.fileName||'archivo'}</div>` : '';
+    return `<div class="tl-item">
+      <div class="tl-dot" style="${dot}"></div>
+      <div class="tl-body">
+        <div class="tl-text">${e.text||''}</div>
+        ${fileHtml}
+        <div class="tl-meta">${OWN_LABEL[e.author]||e.author||'—'} · ${(e.date||'').slice(0,10)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function handleTlFile(evt) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 2*1024*1024) { alert('El archivo debe ser menor a 2MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    tlPendingFile = {name: f.name, type: f.type, data: ev.target.result};
+    document.getElementById('tl-file-name').textContent = '📎 ' + f.name;
+  };
+  reader.readAsDataURL(f);
+}
+
+function downloadTlFile(entryId, entityId) {
+  const entries = timelines[entityId]||[];
+  const e = entries.find(x=>x.id===entryId);
+  if (!e||!e.file) return;
+  const a = document.createElement('a');
+  a.href = e.file; a.download = e.fileName||'archivo';
+  a.click();
+}
+
+function addTimelineEntry() {
+  const text = document.getElementById('tl-new-text').value.trim();
+  const author = document.getElementById('tl-author').value;
+  if (!text && !tlPendingFile) { alert('Escribí una nota o adjuntá un archivo.'); return; }
+  if (!timelines[tlEntityId]) timelines[tlEntityId]=[];
+  const entry = {id:uid(), date:new Date().toISOString(), author, text, type:'nota'};
+  if (tlPendingFile) { entry.file=tlPendingFile.data; entry.fileName=tlPendingFile.name; }
+  timelines[tlEntityId].push(entry);
+  S('dgl_timelines_v1', timelines);
+  document.getElementById('tl-new-text').value='';
+  document.getElementById('tl-file-name').textContent='';
+  tlPendingFile=null;
+  document.getElementById('tl-file-input').value='';
+  renderTimeline();
+  renderProspectos();
+  toast('Nota agregada');
+}
+
+// ─── BILLING / COBRANZA ───────────────────────────────────────
+let billClientId = null;
+
+function openBilling(clientId, name) {
+  billClientId = clientId;
+  document.getElementById('bill-title').textContent = '💰 Cobranza · ' + name;
+  renderBilling();
+  document.getElementById('mod-billing').classList.add('open');
+}
+function closeBilling() { document.getElementById('mod-billing').classList.remove('open'); billClientId=null; }
+
+function renderBilling() {
+  const rows = billing.filter(b=>b.clientId===billClientId);
+  const total = rows.reduce((a,b)=>a+Number(b.monto||0),0);
+  const pagado = rows.filter(b=>b.estado==='pagado').reduce((a,b)=>a+Number(b.monto||0),0);
+  const pendiente = rows.filter(b=>b.estado==='pendiente').reduce((a,b)=>a+Number(b.monto||0),0);
+  const vencido = rows.filter(b=>b.estado==='vencido').reduce((a,b)=>a+Number(b.monto||0),0);
+  document.getElementById('bill-summary').innerHTML = `
+    <div class="kpi" style="flex:1;min-width:120px"><div class="kpi-label">Total facturado</div><div class="kpi-value" style="font-size:18px">USD ${total.toLocaleString()}</div></div>
+    <div class="kpi" style="flex:1;min-width:120px"><div class="kpi-label">Cobrado</div><div class="kpi-value" style="font-size:18px;color:var(--ok)">USD ${pagado.toLocaleString()}</div></div>
+    <div class="kpi" style="flex:1;min-width:120px"><div class="kpi-label">Pendiente</div><div class="kpi-value" style="font-size:18px;color:var(--warn)">USD ${pendiente.toLocaleString()}</div></div>
+    ${vencido?`<div class="kpi" style="flex:1;min-width:120px"><div class="kpi-label">Vencido</div><div class="kpi-value" style="font-size:18px;color:var(--err)">USD ${vencido.toLocaleString()}</div></div>`:''}`;
+
+  const BILL_CLS={pagado:'p-pago',pendiente:'p-pend',vencido:'p-venc'};
+  document.getElementById('bill-list').innerHTML = rows.length
+    ? rows.slice().reverse().map(b => `
+      <div class="bill-row">
+        <div class="bill-amount">USD ${Number(b.monto||0).toLocaleString()}</div>
+        <div style="color:var(--muted);font-size:12px;flex:1">${b.mes||'—'} · ${b.desc||''}</div>
+        <div style="font-size:12px;color:var(--muted2)">${b.venc?'Vence: '+b.venc:''}</div>
+        <span class="pill ${BILL_CLS[b.estado]||'p-pend'}">${b.estado}</span>
+        <button class="btn btn-ghost btn-sm" onclick="cycleBillStatus('${b.id}')">↻</button>
+        <button class="btn btn-danger btn-sm" onclick="delBill('${b.id}')">🗑</button>
+      </div>`).join('')
+    : '<div class="empty" style="padding:16px 0">Sin registros de facturación.</div>';
+}
+
+function cycleBillStatus(id) {
+  const b = billing.find(x=>x.id===id); if (!b) return;
+  const cycle = ['pendiente','pagado','vencido'];
+  b.estado = cycle[(cycle.indexOf(b.estado)+1)%cycle.length];
+  S('dgl_billing_v1', billing);
+  renderBilling(); renderProspectos();
+}
+function delBill(id) {
+  billing = billing.filter(b=>b.id!==id);
+  S('dgl_billing_v1', billing);
+  renderBilling(); renderProspectos();
+}
+function addBillingRecord() {
+  const monto = document.getElementById('bill-monto').value;
+  if (!monto) { alert('Ingresá el monto.'); return; }
+  billing.push({
+    id: uid(),
+    clientId: billClientId,
+    mes:   document.getElementById('bill-mes').value,
+    monto: monto,
+    estado:document.getElementById('bill-est').value,
+    venc:  document.getElementById('bill-venc').value,
+    desc:  document.getElementById('bill-desc').value,
+    fecha: new Date().toISOString().split('T')[0],
+  });
+  S('dgl_billing_v1', billing);
+  ['bill-mes','bill-monto','bill-venc','bill-desc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  renderBilling(); renderProspectos();
+  toast('Factura registrada');
+}
+
+// ─── CLIENT DETAIL MODAL ──────────────────────────────────────
+let cdClientId = null;
+
+function openClientDetail(id) {
+  const c = clients.find(x=>x.id===id); if (!c) return;
+  cdClientId = id;
+  document.getElementById('cd-title').textContent = '🏢 ' + c.empresa;
+  switchCdTab('info');
+  document.getElementById('mod-client-detail').classList.add('open');
+}
+function closeClientDetail() { document.getElementById('mod-client-detail').classList.remove('open'); cdClientId=null; }
+
+function switchCdTab(tab) {
+  ['info','posiciones','candidatos','cobranza'].forEach(t => {
+    document.getElementById('cd-pane-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('#cd-tabs .tab-inner-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['info','posiciones','candidatos','cobranza'][i]===tab);
+  });
+  const c = clients.find(x=>x.id===cdClientId); if (!c) return;
+  if (tab==='info')       renderCdInfo(c);
+  if (tab==='posiciones') renderCdPositions(c);
+  if (tab==='candidatos') renderCdCandidates(c);
+  if (tab==='cobranza')   renderCdBilling(c);
+}
+
+function renderCdInfo(c) {
+  const pane = document.getElementById('cd-pane-info');
+  pane.innerHTML = `
+    <div class="drow"><span class="dk">Empresa</span><span class="dv">${c.empresa}</span></div>
+    <div class="drow"><span class="dk">Industria</span><span class="dv">${c.industria||'—'}</span></div>
+    <div class="drow"><span class="dk">Contacto</span><span class="dv">${c.contacto||'—'} ${c.cargo?'('+c.cargo+')':''}</span></div>
+    <div class="drow"><span class="dk">Email</span><span class="dv">${c.email||'—'}</span></div>
+    <div class="drow"><span class="dk">Teléfono</span><span class="dv">${c.tel||'—'}</span></div>
+    <div class="drow"><span class="dk">Responsable DGL</span><span class="dv">${c.resp||'—'}</span></div>
+    <div class="drow"><span class="dk">Estado</span><span class="dv">${pEst(c.estado)}</span></div>
+    ${c.notas?`<div class="drow" style="flex-direction:column;gap:4px"><span class="dk">Notas</span><span style="font-size:13px;margin-top:4px;line-height:1.5">${c.notas}</span></div>`:''}`;
+}
+
+function renderCdPositions(c) {
+  const pane = document.getElementById('cd-pane-posiciones');
+  const pos = positions.filter(p=>p.cliente===c.empresa);
+  if (!pos.length) { pane.innerHTML='<div class="empty" style="padding:24px 0"><span class="empty-ico">📋</span>No hay posiciones.</div>'; return; }
+  pane.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr><th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Posición</th>
+    <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Perfil</th>
+    <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Resp.</th>
+    <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Estado</th>
+    <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Candidatos</th></tr></thead>
+    <tbody>${pos.map(p => {
+      const cnt = cands.filter(c=>c.posicion&&c.posicion.toLowerCase()===p.titulo.toLowerCase()).length;
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:10px"><strong>${p.titulo}</strong></td>
+        <td style="padding:10px;color:var(--muted);font-size:12px">${p.perfil||'—'}</td>
+        <td style="padding:10px;font-size:12px">${p.resp||'—'}</td>
+        <td style="padding:10px">${pEst(p.estado)}</td>
+        <td style="padding:10px;font-size:13px;font-weight:600;color:${cnt?'var(--accent)':'var(--muted2)'}">${cnt}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function renderCdCandidates(c) {
+  const pane = document.getElementById('cd-pane-candidatos');
+  const cliPos = positions.filter(p=>p.cliente===c.empresa).map(p=>p.titulo.toLowerCase());
+  const cliCands = cands.filter(x=>x.posicion&&cliPos.includes(x.posicion.toLowerCase()));
+  if (!cliCands.length) { pane.innerHTML='<div class="empty" style="padding:24px 0"><span class="empty-ico">👤</span>No hay candidatos para este cliente.</div>'; return; }
+  pane.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Candidato</th>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Posición</th>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Score</th>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">Estado</th>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase">CV</th>
+      <th style="font-size:10px;font-weight:600;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase"></th>
+    </tr></thead>
+    <tbody>${cliCands.map(cand => {
+      const idx = cands.indexOf(cand);
+      const sc = avg(cand);
+      const hired = cand.clientStatus==='contratado';
+      const cvHtml = cand.cvFile
+        ? `<a onclick="downloadCv(${idx})" style="font-size:12px;color:var(--info);cursor:pointer;text-decoration:underline">📄 ${cand.cvFileName||'CV'}</a>`
+        : `<label class="btn btn-ghost btn-sm" style="cursor:pointer;font-size:11px">⬆ CV<input type="file" accept=".pdf,.doc,.docx" style="display:none" onchange="uploadCv(event,${idx})"></label>`;
+      return `<tr style="border-bottom:1px solid var(--border);${hired?'background:rgba(52,211,153,.04)':''}">
+        <td style="padding:10px"><strong>${cand.nombre}</strong></td>
+        <td style="padding:10px;color:var(--muted);font-size:12px">${cand.posicion||'—'}</td>
+        <td style="padding:10px"><span class="stars-sm" style="font-size:12px">${stH(sc)}</span> <span style="font-size:11px;color:var(--muted2)">${sc}/5</span></td>
+        <td style="padding:10px">
+          <select onchange="setCandClientStatus(${idx},this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface2);color:var(--text)">
+            <option value="" ${!cand.clientStatus?'selected':''}>—</option>
+            <option value="presentado" ${cand.clientStatus==='presentado'?'selected':''}>Presentado</option>
+            <option value="entrevistado" ${cand.clientStatus==='entrevistado'?'selected':''}>Entrevistado</option>
+            <option value="ofertado" ${cand.clientStatus==='ofertado'?'selected':''}>Con oferta</option>
+            <option value="contratado" ${cand.clientStatus==='contratado'?'selected':''}>Contratado ✓</option>
+          </select>
+        </td>
+        <td style="padding:10px">${cvHtml}</td>
+        <td style="padding:10px"><button class="btn btn-ghost btn-sm" onclick="openReport(${idx})">📄 Reporte</button></td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function setCandClientStatus(idx, status) {
+  cands[idx].clientStatus = status;
+  S('dgl_cands_v2', cands);
+  renderCands();
+  toast('Estado actualizado');
+}
+
+function uploadCv(evt, idx) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 3*1024*1024) { alert('El CV debe ser menor a 3MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    cands[idx].cvFile = ev.target.result;
+    cands[idx].cvFileName = f.name;
+    S('dgl_cands_v2', cands);
+    const c = clients.find(x=>x.id===cdClientId);
+    if (c) renderCdCandidates(c);
+    toast('CV subido: ' + f.name);
+  };
+  reader.readAsDataURL(f);
+}
+
+function downloadCv(idx) {
+  const cand = cands[idx]; if (!cand||!cand.cvFile) return;
+  const a = document.createElement('a');
+  a.href = cand.cvFile; a.download = cand.cvFileName||'cv.pdf';
+  a.click();
+}
+
+function renderCdBilling(c) {
+  const pane = document.getElementById('cd-pane-cobranza');
+  const rows = billing.filter(b=>b.clientId===c.id);
+  const total = rows.reduce((a,b)=>a+Number(b.monto||0),0);
+  const pagado = rows.filter(b=>b.estado==='pagado').reduce((a,b)=>a+Number(b.monto||0),0);
+  const pendiente = rows.filter(b=>b.estado==='pendiente').reduce((a,b)=>a+Number(b.monto||0),0);
+  const BILL_CLS={pagado:'p-pago',pendiente:'p-pend',vencido:'p-venc'};
+  pane.innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div class="kpi" style="flex:1;min-width:110px"><div class="kpi-label">Total facturado</div><div class="kpi-value" style="font-size:18px">USD ${total.toLocaleString()}</div></div>
+      <div class="kpi" style="flex:1;min-width:110px"><div class="kpi-label">Cobrado</div><div class="kpi-value" style="font-size:18px;color:var(--ok)">USD ${pagado.toLocaleString()}</div></div>
+      <div class="kpi" style="flex:1;min-width:110px"><div class="kpi-label">Pendiente</div><div class="kpi-value" style="font-size:18px;color:var(--warn)">USD ${pendiente.toLocaleString()}</div></div>
+    </div>
+    ${rows.length ? rows.slice().reverse().map(b=>`
+      <div class="bill-row">
+        <div class="bill-amount">USD ${Number(b.monto||0).toLocaleString()}</div>
+        <div style="color:var(--muted);font-size:12px;flex:1">${b.mes||'—'} · ${b.desc||''}</div>
+        <span class="pill ${BILL_CLS[b.estado]||'p-pend'}">${b.estado}</span>
+        <button class="btn btn-ghost btn-sm" onclick="cycleBillStatus('${b.id}');renderCdBilling(clients.find(x=>x.id===cdClientId))">↻</button>
+      </div>`).join('') : '<div style="color:var(--muted);padding:16px 0;font-size:13px">Sin registros. Usá el botón 💰 en la lista de clientes.</div>'}`;
+}
+
+// ─── CANDIDATE REPORT ─────────────────────────────────────────
+let reportIdx = null;
+
+function openReport(idx) {
+  reportIdx = idx;
+  const c = cands[idx]; if (!c) return;
+  document.getElementById('rep-title').textContent = 'Reporte · ' + c.nombre;
+  document.getElementById('rep-content').textContent = buildReport(c);
+  document.getElementById('mod-report').classList.add('open');
+}
+function closeReport() { document.getElementById('mod-report').classList.remove('open'); reportIdx=null; }
+
+function buildReport(c) {
+  const sc = avg(c);
+  const stars = n => '★'.repeat(n) + '☆'.repeat(5-n);
+  const dim = d => `  • ${d.label.padEnd(26,' ')}: ${stars(c.scores[d.key]||0)}  (${c.scores[d.key]||0}/5)`;
+  const rec = c.rec==='Avanzar' ? '✓ AVANZAR' : c.rec==='En espera' ? '⏳ EN ESPERA' : '✗ DESCARTAR';
+  return [
+    '═══════════════════════════════════════════',
+    ' REPORTE DE CANDIDATO · DGL Data Talent   ',
+    '═══════════════════════════════════════════',
+    `Candidato   : ${c.nombre||'—'}`,
+    `Posición    : ${c.posicion||'—'}`,
+    `Fecha       : ${c.fecha||'—'}`,
+    `Experiencia : ${c.exp||'—'} años`,
+    `Pretensión  : ${c.salario||'—'} USD/mes`,
+    `Modalidad   : ${c.modalidad||'—'}`,
+    `Contacto    : ${c.contacto||'—'}`,
+    '',
+    'EVALUACIÓN POR COMPETENCIAS',
+    '────────────────────────────',
+    ...DIMS.map(dim),
+    '',
+    `SCORE PROMEDIO: ${sc}/5`,
+    '',
+    'FORTALEZAS',
+    '──────────',
+    c.fortalezas||'—',
+    '',
+    'RIESGOS / ÁREAS DE MEJORA',
+    '──────────────────────────',
+    c.riesgos||'—',
+    '',
+    'COMENTARIOS ADICIONALES',
+    '────────────────────────',
+    c.comentarios||'—',
+    '',
+    'RECOMENDACIÓN FINAL',
+    '────────────────────',
+    rec,
+    '',
+    '═══════════════════════════════════════════',
+  ].join('\n');
+}
+
+function copyReport() {
+  const c = cands[reportIdx]; if (!c) return;
+  navigator.clipboard.writeText(buildReport(c)).then(()=>toast('Reporte copiado al portapapeles'));
+}
+
 // ─── MODAL CLOSE ON OVERLAY ────────────────────────────────────
-['mod-cand','mod-cliente','mod-posicion','mod-crm'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target===document.getElementById(id)) document.getElementById(id).classList.remove('open');
+['mod-cand','mod-cliente','mod-posicion','mod-crm','mod-prospecto','mod-timeline','mod-billing','mod-client-detail','mod-report'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', e => {
+    if (e.target===el) el.classList.remove('open');
   });
 });
 
