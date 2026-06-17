@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DGL Data Talent · ERP</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -196,11 +197,57 @@ select option{background:var(--surface2);color:var(--text)}
 
 <nav class="nav-tabs">
   <button class="nav-tab active" data-page="dashboard">🏠 Dashboard</button>
+  <button class="nav-tab" data-page="contactos">📋 Contactos</button>
   <button class="nav-tab" data-page="candidatos">👤 Candidatos</button>
   <button class="nav-tab" data-page="clientes">🏢 Clientes</button>
-  <button class="nav-tab" data-page="posiciones">📋 Posiciones</button>
+  <button class="nav-tab" data-page="posiciones">🔍 Posiciones</button>
   <button class="nav-tab" data-page="evaluacion">✦ Nueva Evaluación</button>
 </nav>
+
+<!-- ═══════════════════════════════════════════════════════ CONTACTOS -->
+<div id="page-contactos" class="page">
+  <div class="kpi-grid kpi-grid-5" id="crm-kpis"></div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pipeline de Contactos</span>
+      <div class="card-actions">
+        <span id="sync-status" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        <button class="btn btn-ghost btn-sm" onclick="exportCrmCSV()">⬇ CSV</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Importar<input type="file" accept=".csv" style="display:none" onchange="importCrmCSV(event)"></label>
+        <button class="btn btn-ghost btn-sm" onclick="loadFromSheets()">↺ Sheets</button>
+        <button class="btn btn-primary btn-sm" onclick="openCrmModal()">+ Contacto</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="crm-search" placeholder="Buscar nombre, empresa, rol…" oninput="renderCrm()">
+      <select id="crm-est" onchange="renderCrm()">
+        <option value="">Todos los estados</option>
+        <option value="new">Sin contactar</option><option value="sent">Mensaje enviado</option>
+        <option value="replied">Respondió</option><option value="meeting">Reunión agendada</option>
+        <option value="proposal">Propuesta enviada</option><option value="closed">Cerrado ✓</option>
+        <option value="discard">Descartado</option>
+      </select>
+      <select id="crm-tipo" onchange="renderCrm()">
+        <option value="">Todos los perfiles</option>
+        <option value="hr">HR / Talent</option><option value="ceo">CEO / Founder</option>
+        <option value="cto">CTO / CDO / CISO</option><option value="dpo">DPO / Legal</option>
+        <option value="other">Otro</option>
+      </select>
+      <select id="crm-owner" onchange="renderCrm()">
+        <option value="">Todos los responsables</option>
+        <option value="sofia">Sofía</option><option value="daniel">Daniel</option>
+        <option value="facundo">Facundo</option><option value="pablo">Pablo</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nombre</th><th>Empresa</th><th>Perfil</th><th>Responsable</th><th>Estado</th><th>Notas</th><th>Último contacto</th><th></th></tr></thead>
+        <tbody id="crm-tbody"></tbody>
+      </table>
+      <div id="crm-empty" class="empty" style="display:none"><span class="empty-ico">📭</span>No hay contactos.<br>Hacé clic en <strong>+ Contacto</strong> para agregar.</div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
 <div id="page-dashboard" class="page active">
@@ -380,6 +427,46 @@ select option{background:var(--surface2);color:var(--text)}
 
 <!-- ═══════════════════════════════════════════════════════ MODALS -->
 
+<!-- Modal CRM contacto -->
+<div class="modal-ov" id="mod-crm">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title" id="crm-modal-title">Nuevo Contacto</span><button class="modal-x" onclick="closeCrmModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre completo *</label><input id="cr-name" type="text" placeholder="Ana García"></div>
+      <div class="form-group"><label>Empresa *</label><input id="cr-company" type="text" placeholder="Banco Nación"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Responsable</label>
+        <select id="cr-owner"><option value="sofia">Sofía Mónaco</option><option value="daniel">Daniel Monastersky</option><option value="facundo">Facundo Malaureille</option><option value="pablo">Pablo Mlynkiewicz</option></select>
+      </div>
+      <div class="form-group"><label>Cargo / Rol</label><input id="cr-role" type="text" placeholder="HR Manager"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Perfil</label>
+        <select id="cr-type"><option value="hr">HR / Talent</option><option value="ceo">CEO / Founder</option><option value="cto">CTO / CDO / CISO</option><option value="dpo">DPO / Legal / Compliance</option><option value="other">Otro</option></select>
+      </div>
+      <div class="form-group"><label>LinkedIn URL</label><input id="cr-linkedin" type="url" placeholder="https://linkedin.com/in/..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input id="cr-email" type="email" placeholder="ana@empresa.com"></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="cr-status">
+          <option value="new">Sin contactar</option><option value="sent">Mensaje enviado</option>
+          <option value="replied">Respondió</option><option value="meeting">Reunión agendada</option>
+          <option value="proposal">Propuesta enviada</option><option value="closed">Cerrado ✓</option>
+          <option value="discard">Descartado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row single"><div class="form-group"><label>Fecha último contacto</label><input id="cr-date" type="date"></div></div>
+    <div class="form-row single"><div class="form-group"><label>Notas</label><textarea id="cr-notes" placeholder="Comentarios, próximo paso…"></textarea></div></div>
+    <div class="modal-ft">
+      <button class="btn btn-secondary" onclick="closeCrmModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveCrmContact()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal detalle candidato -->
 <div class="modal-ov" id="mod-cand"><div class="modal" id="mod-cand-body"></div></div>
 
@@ -454,23 +541,30 @@ select option{background:var(--surface2);color:var(--text)}
 <div class="toast" id="toast"></div>
 
 <script>
+// ─── GOOGLE SHEETS CONFIG ────────────────────────────────────
+const GS_URL = 'https://script.google.com/macros/s/AKfycbz0VMFKESEq7S_QcqsuaxBNSDi374n4b9_PEhmLn0iDmutn2j8q5vM5dyDFgWmVTFLc/exec';
+
 // ─── STORAGE ─────────────────────────────────────────────────
 const S = (k, d) => { try { localStorage.setItem(k, JSON.stringify(d)); } catch(e) {} };
 const L = (k, def=[]) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e) { return def; } };
 
 // ─── DATA ─────────────────────────────────────────────────────
-let cands    = L('dgl_cands_v2');
-let clients  = L('dgl_clients_v1');
+let cands     = L('dgl_cands_v2');
+let clients   = L('dgl_clients_v1');
 let positions = L('dgl_positions_v1');
+let crmContacts = L('dgl_crm_contacts');
+let crmEditId = null;
+let crmSyncing = false;
 
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['dashboard','candidatos','clientes','posiciones','evaluacion'];
+const PAGES = ['dashboard','contactos','candidatos','clientes','posiciones','evaluacion'];
 document.querySelectorAll('.nav-tab').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
     PAGES.forEach(x => document.getElementById('page-'+x).classList.toggle('active', x===p));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t===b));
     if (p==='dashboard')   renderDashboard();
+    if (p==='contactos')   renderCrm();
     if (p==='candidatos')  renderCands();
     if (p==='clientes')    renderClients();
     if (p==='posiciones')  renderPositions();
@@ -511,11 +605,11 @@ function renderDashboard() {
   const sc  = tot ? (cands.reduce((a,c)=>a+avg(c),0)/tot).toFixed(1) : '—';
 
   document.getElementById('dash-kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-label">Candidatos evaluados</div><div class="kpi-value">${tot}</div></div>
+    <div class="kpi"><div class="kpi-label">Contactos pipeline</div><div class="kpi-value">${crmContacts.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Candidatos evaluados</div><div class="kpi-value" style="color:var(--accent)">${tot}</div></div>
     <div class="kpi"><div class="kpi-label">Para avanzar</div><div class="kpi-value" style="color:var(--ok)">${av}</div></div>
     <div class="kpi"><div class="kpi-label">Clientes activos</div><div class="kpi-value" style="color:var(--info)">${cliAct}</div></div>
-    <div class="kpi"><div class="kpi-label">Posiciones abiertas</div><div class="kpi-value" style="color:var(--accent)">${posAbi}</div></div>
-    <div class="kpi"><div class="kpi-label">Score promedio</div><div class="kpi-value">${sc}<span style="font-size:14px;color:var(--muted)">${tot?'/5':''}</span></div></div>`;
+    <div class="kpi"><div class="kpi-label">Posiciones abiertas</div><div class="kpi-value" style="color:var(--warn)">${posAbi}</div></div>`;
 
   const recCounts = {Avanzar:0,'En espera':0,Descartar:0};
   cands.forEach(c => { if (recCounts[c.rec]!==undefined) recCounts[c.rec]++; });
@@ -988,8 +1082,202 @@ function fillAI(d) {
   toast('Formulario pre-cargado con IA');
 }
 
+// ─── CRM CONTACTOS + GOOGLE SHEETS ───────────────────────────
+const CRM_STATUS = {
+  new:      {label:'Sin contactar', dot:'var(--muted2)'},
+  sent:     {label:'Enviado',       dot:'var(--info)'},
+  replied:  {label:'Respondió',     dot:'var(--ok)'},
+  meeting:  {label:'Reunión agend.',dot:'var(--warn)'},
+  proposal: {label:'Propuesta env.',dot:'var(--accent)'},
+  closed:   {label:'Cerrado ✓',     dot:'var(--ok)'},
+  discard:  {label:'Descartado',    dot:'var(--err)'},
+};
+const CRM_TYPE_LABEL  = {hr:'HR / Talent',ceo:'CEO / Founder',cto:'CTO / CDO',dpo:'DPO / Legal',other:'Otro'};
+const CRM_OWNER_LABEL = {sofia:'Sofía',daniel:'Daniel',facundo:'Facundo',pablo:'Pablo'};
+
+function setSyncStatus(msg, ok) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = ok===false ? 'var(--err)' : ok===true ? 'var(--ok)' : 'var(--muted)';
+}
+
+async function loadFromSheets() {
+  const stored = localStorage.getItem('dgl_crm_contacts');
+  crmContacts = stored ? JSON.parse(stored) : [];
+  renderCrm();
+  setSyncStatus('⟳ Sincronizando con Sheets…', null);
+  try {
+    const res = await fetch(GS_URL + '?action=read', {method:'GET', mode:'cors'});
+    const json = await res.json();
+    if (json.ok && json.data.length > 0) {
+      crmContacts = json.data.map(r => ({
+        id:       String(r.id || uid()),
+        name:     r.nombre       || '',
+        company:  r.empresa      || '',
+        role:     r.cargo        || '',
+        type:     r.perfil       || 'other',
+        owner:    r.responsable  || 'sofia',
+        status:   r.estado       || 'sent',
+        linkedin: r.linkedin     || '',
+        email:    r.email        || '',
+        date:     r.fecha        || '',
+        notes:    r.notas        || '',
+      }));
+      S('dgl_crm_contacts', crmContacts);
+      setSyncStatus('✓ Sincronizado con Google Sheets', true);
+      renderCrm();
+    } else {
+      setSyncStatus('✓ Datos locales', true);
+    }
+  } catch(e) {
+    setSyncStatus('✓ Datos locales', true);
+  }
+}
+
+async function saveToSheets() {
+  if (crmSyncing) return;
+  crmSyncing = true;
+  setSyncStatus('⟳ Guardando…', null);
+  S('dgl_crm_contacts', crmContacts);
+  try {
+    const res = await fetch(GS_URL, {
+      method:'POST', mode:'cors',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'write', contacts: crmContacts}),
+    });
+    const json = await res.json();
+    setSyncStatus(json.ok ? '✓ Guardado en Sheets' : '✓ Guardado local', true);
+  } catch(e) {
+    setSyncStatus('✓ Guardado local', true);
+  }
+  crmSyncing = false;
+}
+
+function renderCrm() {
+  const q   = (document.getElementById('crm-search')?.value||'').toLowerCase();
+  const fSt = document.getElementById('crm-est')?.value||'';
+  const fTy = document.getElementById('crm-tipo')?.value||'';
+  const fOw = document.getElementById('crm-owner')?.value||'';
+
+  const fil = crmContacts.filter(c => {
+    const ms = (c.name+c.company+c.role).toLowerCase().includes(q);
+    return ms && (!fSt||c.status===fSt) && (!fTy||c.type===fTy) && (!fOw||c.owner===fOw);
+  });
+
+  document.getElementById('crm-kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Total contactos</div><div class="kpi-value">${crmContacts.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Mensaje enviado</div><div class="kpi-value" style="color:var(--info)">${crmContacts.filter(c=>c.status==='sent').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Respondieron</div><div class="kpi-value" style="color:var(--ok)">${crmContacts.filter(c=>c.status==='replied').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Reunión agendada</div><div class="kpi-value" style="color:var(--warn)">${crmContacts.filter(c=>c.status==='meeting').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Propuesta enviada</div><div class="kpi-value" style="color:var(--accent)">${crmContacts.filter(c=>c.status==='proposal').length}</div></div>`;
+
+  const tb = document.getElementById('crm-tbody');
+  const em = document.getElementById('crm-empty');
+  if (!fil.length) { tb.innerHTML=''; em.style.display='block'; return; }
+  em.style.display='none';
+  tb.innerHTML = fil.map(c => {
+    const st  = CRM_STATUS[c.status]||CRM_STATUS.new;
+    const li  = c.linkedin ? `<a class="btn btn-ghost btn-sm" href="${c.linkedin}" target="_blank">🔗</a>` : '';
+    const em2 = c.email    ? `<a class="btn btn-ghost btn-sm" href="mailto:${c.email}">✉️</a>` : '';
+    return `<tr>
+      <td><div style="font-weight:500">${c.name}</div></td>
+      <td><div style="font-size:13px">${c.company||'—'}</div><div style="font-size:11px;color:var(--muted2)">${c.role||''}</div></td>
+      <td style="font-size:12px;color:var(--muted)">${CRM_TYPE_LABEL[c.type]||'—'}</td>
+      <td style="font-size:12px">${CRM_OWNER_LABEL[c.owner]||c.owner||'—'}</td>
+      <td><div style="display:flex;align-items:center;gap:6px;font-size:12px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${st.dot};flex-shrink:0;display:inline-block"></span>${st.label}
+      </div></td>
+      <td style="max-width:160px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notes||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${c.date||'—'}</td>
+      <td><div style="display:flex;gap:4px">${li}${em2}
+        <button class="btn btn-ghost btn-sm" onclick="openCrmModal('${c.id}')">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="delCrmContact('${c.id}')">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+
+function openCrmModal(id) {
+  crmEditId = id||null;
+  document.getElementById('crm-modal-title').textContent = id ? 'Editar Contacto' : 'Nuevo Contacto';
+  const c = id ? crmContacts.find(x=>x.id===id) : {};
+  const sv = (el,v) => { const e=document.getElementById(el); if(e) e.value=v||''; };
+  sv('cr-name',c.name); sv('cr-company',c.company); sv('cr-role',c.role);
+  sv('cr-linkedin',c.linkedin); sv('cr-email',c.email); sv('cr-notes',c.notes);
+  sv('cr-date', c.date||new Date().toISOString().slice(0,10));
+  const ow=document.getElementById('cr-owner'); if(ow) ow.value=c.owner||'sofia';
+  const ty=document.getElementById('cr-type');  if(ty) ty.value=c.type||'hr';
+  const st=document.getElementById('cr-status');if(st) st.value=c.status||'new';
+  document.getElementById('mod-crm').classList.add('open');
+}
+function closeCrmModal() { document.getElementById('mod-crm').classList.remove('open'); crmEditId=null; }
+function saveCrmContact() {
+  const name = document.getElementById('cr-name').value.trim();
+  if (!name) { alert('El nombre es requerido.'); return; }
+  const obj = {
+    id: crmEditId||uid(), name,
+    company:  document.getElementById('cr-company').value.trim(),
+    role:     document.getElementById('cr-role').value.trim(),
+    type:     document.getElementById('cr-type').value,
+    owner:    document.getElementById('cr-owner').value,
+    linkedin: document.getElementById('cr-linkedin').value.trim(),
+    email:    document.getElementById('cr-email').value.trim(),
+    status:   document.getElementById('cr-status').value,
+    date:     document.getElementById('cr-date').value,
+    notes:    document.getElementById('cr-notes').value.trim(),
+  };
+  if (crmEditId) { const idx=crmContacts.findIndex(c=>c.id===crmEditId); crmContacts[idx]=obj; }
+  else crmContacts.unshift(obj);
+  saveToSheets(); closeCrmModal(); renderCrm();
+  toast(crmEditId ? 'Contacto actualizado' : 'Contacto guardado');
+}
+function delCrmContact(id) {
+  if (!confirm('¿Eliminar este contacto?')) return;
+  crmContacts = crmContacts.filter(c=>c.id!==id);
+  saveToSheets(); renderCrm();
+  toast('Contacto eliminado');
+}
+function exportCrmCSV() {
+  if (!crmContacts.length) { alert('No hay contactos.'); return; }
+  const h=['Nombre','Empresa','Cargo','Perfil','Responsable','Estado','LinkedIn','Email','Último contacto','Notas'];
+  const rows=crmContacts.map(c=>[c.name,c.company,c.role,CRM_TYPE_LABEL[c.type]||c.type,CRM_OWNER_LABEL[c.owner]||c.owner,
+    CRM_STATUS[c.status]?.label||c.status,c.linkedin,c.email,c.date,c.notes]
+    .map(v=>`"${(v||'').replace(/"/g,'""')}"`));
+  const csv=[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download='DGL_Contactos_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+}
+function importCrmCSV(evt) {
+  const f=evt.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    const OWNER_MAP={'sofía':'sofia','sofia':'sofia','daniel':'daniel','facundo':'facundo','pablo':'pablo'};
+    const STATUS_MAP={'sin contactar':'new','enviado':'sent','respondió':'replied','reunión agendada':'meeting','propuesta enviada':'proposal','cerrado ✓':'closed','cerrado':'closed','descartado':'discard'};
+    let imported=0;
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].match(/(".*?"|[^,]+)(?=,|$)/g)||lines[i].split(',');
+      const clean=cols.map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"').trim());
+      const name=clean[0]; if(!name) continue;
+      const exists=crmContacts.find(c=>c.name.toLowerCase()===name.toLowerCase()&&(c.company||'').toLowerCase()===(clean[1]||'').toLowerCase());
+      if(exists) continue;
+      crmContacts.push({id:uid(),name,company:clean[1]||'',role:clean[2]||'',type:clean[3]||'other',
+        owner:OWNER_MAP[(clean[4]||'').toLowerCase()]||'sofia',
+        status:STATUS_MAP[(clean[5]||'').toLowerCase()]||'sent',
+        linkedin:clean[6]||'',email:clean[7]||'',date:clean[8]||new Date().toISOString().slice(0,10),notes:clean[9]||''});
+      imported++;
+    }
+    saveToSheets(); renderCrm();
+    toast(`${imported} contactos importados`);
+    evt.target.value='';
+  };
+  r.readAsText(f,'UTF-8');
+}
+
 // ─── MODAL CLOSE ON OVERLAY ────────────────────────────────────
-['mod-cand','mod-cliente','mod-posicion'].forEach(id => {
+['mod-cand','mod-cliente','mod-posicion','mod-crm'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target===document.getElementById(id)) document.getElementById(id).classList.remove('open');
   });
@@ -997,6 +1285,7 @@ function fillAI(d) {
 
 // ─── INIT ─────────────────────────────────────────────────────
 initScoreGrid();
+loadFromSheets();
 renderDashboard();
 </script>
 </body>
