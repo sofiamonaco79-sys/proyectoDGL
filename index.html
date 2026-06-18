@@ -911,15 +911,17 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
       <button class="modal-x" onclick="closeApiKey()">×</button>
     </div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">Para usar el análisis con IA necesitás una API Key de Anthropic. Se guarda solo en tu navegador (localStorage), nunca se sube a ningún servidor.</p>
-    <div class="form-group" style="margin-bottom:14px">
+    <div class="form-group" style="margin-bottom:10px">
       <label>Anthropic API Key</label>
-      <input type="password" id="apikey-input" placeholder="sk-ant-api03-..." style="font-family:monospace">
+      <input type="text" id="apikey-input" placeholder="sk-ant-api03-..." style="font-family:monospace;font-size:12px" autocomplete="off" spellcheck="false">
     </div>
+    <div id="apikey-status" style="font-size:12px;min-height:20px;margin-bottom:10px"></div>
     <div style="font-size:12px;color:var(--muted2);margin-bottom:16px">
       Obtené tu key en <span style="color:var(--accent)">console.anthropic.com</span> → API Keys
     </div>
     <div class="modal-ft">
       <button class="btn btn-ghost" onclick="closeApiKey()">Cancelar</button>
+      <button class="btn btn-ghost" onclick="testApiKey()" id="btn-test-key">Probar conexión</button>
       <button class="btn btn-primary" onclick="saveApiKey()">Guardar</button>
     </div>
   </div>
@@ -959,6 +961,36 @@ function saveApiKey() {
   localStorage.setItem('dgl_api_key', v);
   closeApiKey();
   toast('API Key guardada ✓');
+}
+async function testApiKey() {
+  const key = document.getElementById('apikey-input').value.trim();
+  const st = document.getElementById('apikey-status');
+  const btn = document.getElementById('btn-test-key');
+  if (!key) { st.innerHTML='<span style="color:var(--warn)">Pegá la clave primero.</span>'; return; }
+  st.innerHTML='<span style="color:var(--muted)">⏳ Probando...</span>';
+  btn.disabled = true;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:10,messages:[{role:'user',content:'Hi'}]})
+    });
+    const data = await r.json();
+    if (r.ok) {
+      st.innerHTML='<span style="color:var(--ok)">✓ Clave válida — la conexión funciona correctamente.</span>';
+    } else {
+      const msg = data?.error?.message || 'Error ' + r.status;
+      st.innerHTML='<span style="color:var(--danger)">✗ ' + msg + '</span>';
+    }
+  } catch(e) {
+    st.innerHTML='<span style="color:var(--danger)">✗ Error de red: ' + e.message + '</span>';
+  }
+  btn.disabled = false;
 }
 
 // ─── SIDEBAR TOGGLE ───────────────────────────────────────────
