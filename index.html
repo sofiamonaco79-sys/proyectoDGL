@@ -1548,20 +1548,33 @@ async function runAI() {
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('dgl_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': localStorage.getItem('dgl_api_key')||'',
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:SYS,messages:[{role:'user',content:msgContent}]})
     });
     clearInterval(iv);
+    const data = await r.json();
+    if (!r.ok) {
+      const msg = data?.error?.message || `HTTP ${r.status}`;
+      if (r.status===401) throw new Error('API Key inválida o expirada. Verificá la clave en ⚙ API Key.');
+      if (r.status===403) throw new Error('API Key sin permisos. Revisá los permisos en console.anthropic.com.');
+      throw new Error(msg);
+    }
+    if (data.error) throw new Error(data.error.message);
     AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step done';s.querySelector('.ai-step-ico').textContent='✓';}});
     document.getElementById('ai-lbl').textContent='Análisis completado ✓';
-    const data = await r.json();
-    if (data.error) throw new Error(data.error.message);
     const raw = data.content.find(b=>b.type==='text')?.text||'{}';
     const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
     fillAI(parsed);
   } catch(e) {
     clearInterval(iv);
-    document.getElementById('ai-lbl').textContent='Error: ' + (e.message||'Completá manualmente.');
+    AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step';s.querySelector('.ai-step-ico').textContent='✗';}});
+    document.getElementById('ai-lbl').textContent='⚠ ' + (e.message||'Error de red. Verificá la API Key y tu conexión.');
+    console.error('[DGL AI]', e);
   }
   btn.disabled=false;
   setTimeout(()=>prog.classList.remove('show'),4000);
