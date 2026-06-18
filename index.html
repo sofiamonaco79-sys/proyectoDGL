@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DGL Talent</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,
 .erp-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);border:1px solid var(--accent-bd);color:var(--accent);font-weight:600;letter-spacing:.05em}
 /* ── SIDEBAR NAV ───────────────────────────────── */
 .sidebar{position:fixed;left:0;top:52px;width:224px;height:calc(100vh - 52px);background:#ffffff;border-right:1px solid var(--border);overflow-y:auto;padding:14px 0 24px;z-index:40;box-shadow:2px 0 12px rgba(0,0,0,0.05)}
-.sb-item{padding:9px 16px 9px 16px;cursor:pointer;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;border-left:3px solid transparent;transition:all .15s;font-weight:600;user-select:none;font-family:'Montserrat',sans-serif;letter-spacing:.01em}
+.sb-item{padding:9px 14px 9px 14px;cursor:pointer;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:10px;border-left:3px solid transparent;transition:all .15s;font-weight:600;user-select:none;font-family:'Barlow',sans-serif;letter-spacing:.02em}
 .sb-item:hover{color:var(--text);background:var(--surface2)}
 .sb-item.active{color:var(--accent);background:rgba(0,168,232,.08);border-left-color:var(--accent);font-weight:700}
 .sb-item.active.pipe-item{color:#0068b0;background:rgba(0,104,176,.07);border-left-color:#0080c0}
@@ -36,23 +36,22 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,
 .sb-item.active.met-item{color:#d97706;background:rgba(217,119,6,.08);border-left-color:#d97706}
 .sb-group-hd{padding:16px 16px 7px 22px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#9ab0c4;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;transition:color .15s;font-family:'Montserrat',sans-serif}
 .sb-group-hd:hover{color:var(--muted)}
-.sb-group-btn{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 10px;border-radius:12px;cursor:pointer;user-select:none;transition:background .15s;margin-bottom:2px}
+.sb-group-btn{display:flex;align-items:center;gap:10px;padding:9px 12px 9px 10px;border-radius:10px;cursor:pointer;user-select:none;transition:background .15s;margin-bottom:1px}
 .sb-group-btn:hover{background:var(--surface2)}
-.sb-glabel{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);flex:1}
-.sb-gicon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.sb-glabel{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#8aa3ba;flex:1}
+.sb-gicon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-chevron{font-size:10px;transition:transform .22s;opacity:.5;color:var(--muted2)}
 .sb-chevron.closed{transform:rotate(-90deg)}
 .sb-group-hd.closed .sb-chevron{transform:rotate(-90deg)}
 .sb-group-body{overflow:hidden;transition:max-height .28s ease;max-height:300px}
 .sb-group-body.closed{max-height:0}
-.sb-sub{padding-left:22px;font-size:11.5px}
+.sb-sub{padding-left:20px;font-size:12.5px}
 .sb-divider{height:1px;background:var(--border);margin:10px 16px}
-.sb-ico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:transform .15s}
-.sb-item[data-page=dashboard] .sb-ico{background:linear-gradient(135deg,rgba(0,168,232,.2),rgba(0,100,200,.15))}
-.pipe-item .sb-ico{background:linear-gradient(135deg,rgba(0,140,230,.18),rgba(0,80,210,.12))}
-.rrhh-item .sb-ico{background:linear-gradient(135deg,rgba(5,150,105,.18),rgba(3,100,70,.12))}
-.met-item .sb-ico{background:linear-gradient(135deg,rgba(217,119,6,.18),rgba(180,80,0,.12))}
-.sb-item:hover .sb-ico{transform:scale(1.08)}
+.sb-ico{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(15,40,80,.06);color:#6b8fad;transition:color .15s,background .15s}
+.sb-item:hover .sb-ico{background:rgba(0,140,220,.1);color:#2a9fd6}
+.sb-item.active .sb-ico{background:rgba(0,140,220,.13);color:var(--accent)}
+.met-item .sb-ico{color:#c07a2a}
+.met-item:hover .sb-ico,.met-item.active .sb-ico{background:rgba(217,119,6,.1);color:#d97706}
 .page{display:none;padding:28px 32px;margin-left:224px;min-height:calc(100vh - 52px)}
 .page.active{display:block}
 
@@ -294,52 +293,52 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 
     <!-- COMERCIAL -->
     <div class="sb-group-btn" onclick="toggleGroup('g-com')">
-      <span class="sb-gicon" style="background:linear-gradient(135deg,#0080e8,#0055b3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
+      <span class="sb-gicon" style="background:#0f2e58"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4da6e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
       <span class="sb-glabel">Comercial</span>
       <span class="sb-chevron" id="chev-g-com">▾</span>
     </div>
     <div class="sb-group-body" id="g-com" style="padding:0 0 4px">
-      <div class="sb-item sb-sub" data-page="contactos" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Contactos
+      <div class="sb-item sb-sub" data-page="contactos" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Contactos
       </div>
-      <div class="sb-item sb-sub" data-page="clientes" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg></span>Clientes
+      <div class="sb-item sb-sub" data-page="clientes" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Clientes
       </div>
     </div>
 
     <!-- RRHH -->
     <div class="sb-group-btn" onclick="toggleGroup('g-rrhh')">
-      <span class="sb-gicon" style="background:linear-gradient(135deg,#059669,#047857)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span class="sb-gicon" style="background:#0a2e1e"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34c993" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
       <span class="sb-glabel">RRHH</span>
       <span class="sb-chevron" id="chev-g-rrhh">▾</span>
     </div>
     <div class="sb-group-body" id="g-rrhh" style="padding:0 0 4px">
-      <div class="sb-item sb-sub active" data-page="candidatos" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>Candidatos
+      <div class="sb-item sb-sub active" data-page="candidatos" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>Candidatos
       </div>
-      <div class="sb-item sb-sub" data-page="posiciones" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Posiciones
+      <div class="sb-item sb-sub" data-page="posiciones" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Posiciones
       </div>
-      <div class="sb-item sb-sub" data-page="evaluacion" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Evaluación
+      <div class="sb-item sb-sub" data-page="evaluacion" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>Evaluación
       </div>
     </div>
 
     <!-- DIPLO -->
     <div class="sb-group-btn" onclick="toggleGroup('g-diplo')">
-      <span class="sb-gicon" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 6 3 6 3s6-1 6-3v-5"/></svg></span>
+      <span class="sb-gicon" style="background:#1e0a3c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 6 3 6 3s6-1 6-3v-5"/></svg></span>
       <span class="sb-glabel">Diplo</span>
       <span class="sb-chevron" id="chev-g-diplo">▾</span>
     </div>
     <div class="sb-group-body" id="g-diplo" style="padding:0 0 4px">
-      <div class="sb-item sb-sub" data-page="diplomatura" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>Base Diplomatura
+      <div class="sb-item sb-sub" data-page="diplomatura" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>Base Diplomatura
       </div>
     </div>
 
     <div class="sb-divider" style="margin:10px 8px"></div>
     <div class="sb-item met-item" data-page="metricas" style="border-radius:10px">
-      <span class="sb-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Métricas
+      <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Métricas
     </div>
   </div>
 </aside>
