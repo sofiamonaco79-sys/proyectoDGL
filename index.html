@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DGL Data Talent · ERP</title>
+<title>DGL Talent</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -274,9 +274,8 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 <body>
 
 <header class="app-header">
-  <div class="logo">DGL <span>Data Talent</span><span class="logo-sep">·</span><span class="logo-sub">ERP</span></div>
+  <div class="logo">DGL <span>Talent</span></div>
   <div class="header-right">
-    <span class="erp-badge">ERP</span>
     <span class="header-user">Sofía · DGL Talent</span>
   </div>
 </header>
@@ -562,8 +561,13 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
         <div class="form-group"><label>Fecha de entrevista</label><input id="f-fecha" type="date"></div>
       </div>
       <div class="form-row single">
-        <div class="form-group"><label>CV / Notas de entrevista (pegá el texto para análisis IA)</label>
+        <div class="form-group">
+          <label>CV / Notas de entrevista (pegá el texto o adjuntá el archivo)</label>
           <textarea id="f-cv" placeholder="Pegá aquí el CV o notas de la entrevista para que la IA pre-complete el formulario..." style="min-height:90px"></textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Adjuntar CV<input type="file" id="f-cv-file" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="handleEvalFile(event)"></label>
+            <span id="f-cv-file-name" style="font-size:12px;color:var(--muted)"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -766,7 +770,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
       </div></div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap">
         <div style="display:flex;gap:8px;align-items:center">
-          <label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Adjuntar<input type="file" id="tl-file-input" style="display:none" onchange="handleTlFile(event)"></label>
+          <label class="btn btn-pipeline btn-sm" style="cursor:pointer">📎 Adjuntar documento<input type="file" id="tl-file-input" style="display:none" onchange="handleTlFile(event)"></label>
           <span id="tl-file-name" style="font-size:12px;color:var(--muted)"></span>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
@@ -1342,12 +1346,27 @@ function guardarCand() {
     comentarios:document.getElementById('f-coment').value,
     rec:        curRec,
     scores:     {...hrSc},
+    cvFile:     pendingEvalFile ? pendingEvalFile.data : null,
+    cvFileName: pendingEvalFile ? pendingEvalFile.name : null,
   });
   S('dgl_cands_v2', cands);
   clearEvalForm();
   document.querySelector('[data-page=candidatos]').click();
   toast('Evaluación guardada');
 }
+let pendingEvalFile = null;
+
+function handleEvalFile(evt) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 5*1024*1024) { alert('El archivo debe ser menor a 5MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pendingEvalFile = {name: f.name, type: f.type, data: ev.target.result};
+    document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name;
+  };
+  reader.readAsDataURL(f);
+}
+
 function clearEvalForm() {
   ['f-nombre','f-posicion','f-exp','f-salario','f-contacto','f-fecha','f-fort','f-riesg','f-coment','f-cv']
     .forEach(id => { const el=document.getElementById(id); if(el){el.value='';el.classList.remove('aif');} });
@@ -1355,12 +1374,15 @@ function clearEvalForm() {
   curRec=''; selRec('');
   DIMS.forEach(d => { hrSc[d.key]=0; drawStars(d.key); });
   document.getElementById('ai-badge').classList.remove('show');
+  pendingEvalFile = null;
+  const fn = document.getElementById('f-cv-file-name'); if(fn) fn.textContent='';
+  const fi = document.getElementById('f-cv-file'); if(fi) fi.value='';
 }
 
 // ─── AI ───────────────────────────────────────────────────────
 const AI_ST = ['Leyendo el CV...','Analizando experiencia...','Evaluando fit con el rol...','Calculando scores...','Generando recomendación...'];
 
-const SYS = `Sos asistente de RRHH para DGL Data Talent, firma de búsqueda ejecutiva especializada en datos, privacidad e IA en LATAM.
+const SYS = `Sos asistente de RRHH para DGL Talent, firma de búsqueda ejecutiva especializada en datos, privacidad e IA en LATAM.
 Analizás CVs y notas de entrevista para completar formularios de evaluación de candidatos.
 Devolvé ÚNICAMENTE un JSON válido sin texto adicional ni markdown:
 {"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":1,"experiencia":1,"liderazgo":1,"datos":1,"comunicacion":1,"autonomia":1,"transformacion":1,"salario_fit":1},"recomendacion":"Avanzar|En espera|Descartar"}`;
@@ -1687,7 +1709,7 @@ function renderProspectos() {
       <td><div style="font-size:12px;color:${billPend?'var(--warn)':'var(--muted)'}">${billAmt?'USD '+billAmt.toLocaleString():'—'}${billPend?' ⚠':''}
       </div></td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="openTimeline('${p.id}','${p.empresa}')">📝 Historial</button>
+        <button class="btn btn-ghost btn-sm" onclick="openTimeline('${p.id}','${p.empresa}')">📝 Historial${((timelines[p.id]||[]).filter(e=>e.file).length)>0?` <span style="background:var(--accent);color:#fff;border-radius:9px;padding:0 6px;font-size:10px;margin-left:2px">${(timelines[p.id]||[]).filter(e=>e.file).length}</span>`:''}</button>
         <button class="btn btn-ghost btn-sm" onclick="openBilling('${p.id}','${p.empresa}')">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="openProspectoModal('${p.id}')">✏</button>
         ${p.etapa!=='cliente'?`<button class="btn btn-ghost btn-sm" onclick="convertirACliente('${p.id}')" title="Convertir a cliente">→🏢</button>`:''}
@@ -1799,10 +1821,27 @@ function openTimeline(entityId, name) {
 function closeTimeline() { document.getElementById('mod-timeline').classList.remove('open'); tlEntityId=null; tlPendingFile=null; }
 
 function renderTimeline() {
-  const entries = (timelines[tlEntityId]||[]).slice().reverse();
+  const all = timelines[tlEntityId]||[];
+  const entries = all.slice().reverse();
+  const docs = all.filter(e=>e.file).sort((a,b)=>a.date>b.date?-1:1);
   const list = document.getElementById('tl-list');
-  if (!entries.length) { list.innerHTML='<div class="empty" style="padding:20px 0"><span>Sin notas todavía.</span></div>'; return; }
-  list.innerHTML = entries.map(e => {
+
+  const docsHtml = docs.length ? `
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:10px">📎 Documentos adjuntos (${docs.length})</div>
+      ${docs.map(e=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--accent);font-weight:600">${e.date||'—'}</span>
+          <div class="tl-file" onclick="downloadTlFile('${e.id}','${tlEntityId}')" style="flex:1">📎 ${e.fileName||'archivo'}</div>
+          <span style="font-size:11px;color:var(--muted2)">${e.author||''}</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  if (!entries.length) {
+    list.innerHTML = docsHtml + '<div class="empty" style="padding:20px 0"><span>Sin notas todavía.</span></div>';
+    return;
+  }
+  list.innerHTML = docsHtml + entries.map(e => {
     const dot = e.type==='hito'?'background:var(--ok)':'background:var(--accent)';
     const fileHtml = e.file ? `<div class="tl-file" onclick="downloadTlFile('${e.id}','${tlEntityId}')">📎 ${e.fileName||'archivo'}</div>` : '';
     return `<div class="tl-item">
@@ -2092,7 +2131,7 @@ function buildReport(c) {
   const rec = c.rec==='Avanzar' ? '✓ AVANZAR' : c.rec==='En espera' ? '⏳ EN ESPERA' : '✗ DESCARTAR';
   return [
     '═══════════════════════════════════════════',
-    ' REPORTE DE CANDIDATO · DGL Data Talent   ',
+    ' REPORTE DE CANDIDATO · DGL Talent   ',
     '═══════════════════════════════════════════',
     `Candidato   : ${c.nombre||'—'}`,
     `Posición    : ${c.posicion||'—'}`,
