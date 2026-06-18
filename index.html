@@ -1359,12 +1359,22 @@ let pendingEvalFile = null;
 function handleEvalFile(evt) {
   const f = evt.target.files[0]; if (!f) return;
   if (f.size > 5*1024*1024) { alert('El archivo debe ser menor a 5MB.'); evt.target.value=''; return; }
+  const isText = f.type==='text/plain' || f.name.endsWith('.txt');
   const reader = new FileReader();
-  reader.onload = ev => {
-    pendingEvalFile = {name: f.name, type: f.type, data: ev.target.result};
-    document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name;
-  };
-  reader.readAsDataURL(f);
+  if (isText) {
+    reader.onload = ev => {
+      document.getElementById('f-cv').value = ev.target.result;
+      document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name + ' (texto cargado)';
+      pendingEvalFile = {name: f.name, type: 'text/plain', data: null};
+    };
+    reader.readAsText(f);
+  } else {
+    reader.onload = ev => {
+      pendingEvalFile = {name: f.name, type: f.type, data: ev.target.result};
+      document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name + ' — listo para analizar con IA';
+    };
+    reader.readAsDataURL(f);
+  }
 }
 
 function clearEvalForm() {
@@ -1390,7 +1400,12 @@ Devolvé ÚNICAMENTE un JSON válido sin texto adicional ni markdown:
 async function runAI() {
   const cvText = document.getElementById('f-cv').value.trim();
   const posText = document.getElementById('f-posicion').value.trim();
-  if (!cvText) { alert('Pegá el CV o notas de la entrevista en el campo de texto primero.'); return; }
+  const hasPdf  = pendingEvalFile && pendingEvalFile.type === 'application/pdf' && pendingEvalFile.data;
+
+  if (!cvText && !pendingEvalFile) {
+    alert('Pegá el CV, notas de la entrevista (ej: Tactiq) o adjuntá un archivo PDF para analizar con IA.');
+    return;
+  }
 
   const btn = document.getElementById('ai-btn'); btn.disabled=true;
   const prog = document.getElementById('ai-prog'); prog.classList.add('show');
@@ -1403,13 +1418,23 @@ async function runAI() {
     si++;if(si>=AI_ST.length)clearInterval(iv);
   },700);
 
-  const userMsg = `CV / Notas de entrevista:\n${cvText}${posText?'\n\nRol evaluado: '+posText:''}`;
+  const roleNote = posText ? `\n\nRol evaluado: ${posText}` : '';
+  let msgContent;
+  if (hasPdf) {
+    const base64 = pendingEvalFile.data.split(',')[1];
+    msgContent = [
+      {type:'document', source:{type:'base64', media_type:'application/pdf', data: base64}},
+      {type:'text', text:`Analizá el CV adjunto (PDF) y completá el formulario JSON.${cvText?'\n\nNotas adicionales de entrevista:\n'+cvText:''}${roleNote}`}
+    ];
+  } else {
+    msgContent = `CV / Notas de entrevista:\n${cvText}${roleNote}`;
+  }
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':'','anthropic-version':'2023-06-01'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:[{role:'user',content:userMsg}]})
+      headers:{'Content-Type':'application/json','x-api-key':'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:SYS,messages:[{role:'user',content:msgContent}]})
     });
     clearInterval(iv);
     AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step done';s.querySelector('.ai-step-ico').textContent='✓';}});
@@ -1710,6 +1735,7 @@ function renderProspectos() {
       </div></td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" onclick="openTimeline('${p.id}','${p.empresa}')">📝 Historial${((timelines[p.id]||[]).filter(e=>e.file).length)>0?` <span style="background:var(--accent);color:#fff;border-radius:9px;padding:0 6px;font-size:10px;margin-left:2px">${(timelines[p.id]||[]).filter(e=>e.file).length}</span>`:''}</button>
+        <label class="btn btn-pipeline btn-sm" style="cursor:pointer" title="Adjuntar documento">📎<input type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.png,.jpg,.jpeg" style="display:none" onchange="quickAttachFile(event,'${p.id}')"></label>
         <button class="btn btn-ghost btn-sm" onclick="openBilling('${p.id}','${p.empresa}')">💰</button>
         <button class="btn btn-ghost btn-sm" onclick="openProspectoModal('${p.id}')">✏</button>
         ${p.etapa!=='cliente'?`<button class="btn btn-ghost btn-sm" onclick="convertirACliente('${p.id}')" title="Convertir a cliente">→🏢</button>`:''}
@@ -1809,6 +1835,28 @@ function convertirACliente(id) {
 let tlEntityId = null;
 let tlPendingFile = null;
 
+function quickAttachFile(evt, prospId) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 5*1024*1024) { alert('El archivo debe ser menor a 5MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    if (!timelines[prospId]) timelines[prospId] = [];
+    timelines[prospId].push({
+      id: Date.now().toString(),
+      date: new Date().toLocaleDateString('es-AR'),
+      text: '',
+      author: 'sofia',
+      type: 'nota',
+      file: ev.target.result,
+      fileName: f.name
+    });
+    S('dgl_timelines_v1', timelines);
+    renderProspectos();
+    toast('📎 ' + f.name + ' adjunto');
+  };
+  reader.readAsDataURL(f);
+}
+
 function openTimeline(entityId, name) {
   tlEntityId = entityId;
   tlPendingFile = null;
@@ -1847,7 +1895,7 @@ function renderTimeline() {
     return `<div class="tl-item">
       <div class="tl-dot" style="${dot}"></div>
       <div class="tl-body">
-        <div class="tl-text">${e.text||''}</div>
+        ${e.text ? `<div class="tl-text">${e.text}</div>` : ''}
         ${fileHtml}
         <div class="tl-meta">${OWN_LABEL[e.author]||e.author||'—'} · ${(e.date||'').slice(0,10)}</div>
       </div>
