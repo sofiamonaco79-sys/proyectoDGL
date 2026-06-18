@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DGL Talent</title>
+<title>DGL Talent · Acceso</title>
+<script>
+// ── AUTH GATE — runs before anything renders ──────────────────
+(function(){
+  if (!sessionStorage.getItem('dgl_user')) {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('login-gate').style.display = 'flex';
+      document.getElementById('app-root').style.display = 'none';
+    });
+  }
+})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -276,15 +287,54 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 @media(max-width:480px){
   .kpi-grid-5,.kpi-grid-4,.kpi-grid-3{grid-template-columns:1fr 1fr}
 }
+
+/* ── LOGIN GATE ─────────────────────────────────────── */
+#login-gate{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#070f1e 0%,#0c1f3c 55%,#091628 100%)}
+#login-gate::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,140,220,.10) 0%,transparent 70%)}
+.lg-box{position:relative;width:400px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:44px 40px 40px;backdrop-filter:blur(20px)}
+.lg-logo{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:.04em;margin-bottom:4px}
+.lg-logo span{color:#00a8e8}
+.lg-sub{font-family:'Barlow',sans-serif;font-size:12px;color:rgba(255,255,255,.40);letter-spacing:.08em;text-transform:uppercase;margin-bottom:36px}
+.lg-label{font-family:'Barlow',sans-serif;font-size:11.5px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.lg-input{width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-family:'Barlow',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px}
+.lg-input::placeholder{color:rgba(255,255,255,.25)}
+.lg-input:focus{border-color:rgba(0,168,232,.55);background:rgba(255,255,255,.10)}
+.lg-btn{width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#0080c8,#005fa0);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .1s;margin-top:4px}
+.lg-btn:hover{opacity:.9;transform:translateY(-1px)}
+.lg-btn:active{transform:translateY(0)}
+.lg-err{font-family:'Barlow',sans-serif;font-size:12.5px;color:#f87171;margin-top:12px;min-height:18px;text-align:center}
+.lg-footer{font-family:'Barlow',sans-serif;font-size:11px;color:rgba(255,255,255,.2);text-align:center;margin-top:28px;letter-spacing:.04em}
 </style>
 </head>
 <body>
 
+<!-- ── LOGIN GATE ─────────────────────────────────── -->
+<div id="login-gate">
+  <div class="lg-box">
+    <div class="lg-logo">DGL<span>.</span>Talent</div>
+    <div class="lg-sub">Plataforma interna · Acceso restringido</div>
+    <div>
+      <div class="lg-label">Usuario</div>
+      <input class="lg-input" id="lg-user" type="text" placeholder="tu usuario" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('lg-pass').focus()">
+    </div>
+    <div>
+      <div class="lg-label">Contraseña</div>
+      <input class="lg-input" id="lg-pass" type="password" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="lg-btn" onclick="doLogin()">Ingresar</button>
+    <div class="lg-err" id="lg-err"></div>
+    <div class="lg-footer">Data Governance Latam™ · Uso interno exclusivo</div>
+  </div>
+</div>
+
+<div id="app-root">
 <header class="app-header">
   <div class="logo">DGL<span class="logo-dot">.</span><span class="logo-talent">Talent</span></div>
   <div class="header-right">
     <button class="btn btn-ghost btn-sm" onclick="openApiKey()" title="Configurar API Key IA" style="font-size:11px;opacity:.7">⚙ API Key</button>
-    <span class="header-user" style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--muted)">SOFÍA · DGL TALENT</span>
+    <span id="header-username" style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.10em;color:var(--muted);text-transform:uppercase">DGL TALENT</span>
+    <button class="btn btn-ghost btn-sm" onclick="doLogout()" title="Cerrar sesión" style="font-size:11px;opacity:.5">⎋</button>
   </div>
 </header>
 
@@ -2805,6 +2855,66 @@ function exportDiplCSV() {
 initScoreGrid();
 loadFromSheets();
 renderCands();
+</script>
+
+</div><!-- /app-root -->
+
+<!-- ── AUTH LOGIC ─────────────────────────────────── -->
+<script>
+const DGL_USERS = {
+  'sofia':   { name: 'Sofía Mónaco',       hash: '6165fae3f37cccd757625e5d61133f66c9ffdeeb25150a908d4ffc0c93ad71a6' },
+  'daniel':  { name: 'Daniel Monastersky', hash: 'a73b80993275cf2245f6666e418473f9b6635b46a80c73316d3a9e8f2da673d4' },
+  'facundo': { name: 'Facundo Malaureille',hash: 'c206b2b5c289fae4e8e46342c8a40ad3ef0a0f767301eeebe7b2e2269b89bd7f' },
+  'pablo':   { name: 'Pablo Mlynkiewicz',  hash: '5763214312e9ff866be1e3cd65e00eccfc55d10ce6b55688e7d8b35c0c93dcd4' },
+};
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin() {
+  const user = document.getElementById('lg-user').value.trim().toLowerCase();
+  const pass = document.getElementById('lg-pass').value;
+  const err  = document.getElementById('lg-err');
+  err.textContent = '';
+  if (!user || !pass) { err.textContent = 'Completá usuario y contraseña.'; return; }
+  const rec = DGL_USERS[user];
+  if (!rec) { err.textContent = 'Usuario no encontrado.'; return; }
+  const h = await sha256(pass);
+  if (h !== rec.hash) { err.textContent = 'Contraseña incorrecta.'; return; }
+  sessionStorage.setItem('dgl_user', user);
+  sessionStorage.setItem('dgl_name', rec.name);
+  document.getElementById('login-gate').style.display = 'none';
+  document.getElementById('app-root').style.display = '';
+  const el = document.getElementById('header-username');
+  if (el) el.textContent = rec.name.split(' ')[0].toUpperCase() + ' · DGL TALENT';
+}
+
+function doLogout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  sessionStorage.removeItem('dgl_user');
+  sessionStorage.removeItem('dgl_name');
+  document.getElementById('login-gate').style.display = 'flex';
+  document.getElementById('app-root').style.display = 'none';
+  document.getElementById('lg-pass').value = '';
+  document.getElementById('lg-err').textContent = '';
+}
+
+// On load: restore session or show login
+(function initAuth() {
+  const u = sessionStorage.getItem('dgl_user');
+  const n = sessionStorage.getItem('dgl_name');
+  if (u && DGL_USERS[u]) {
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('app-root').style.display = '';
+    const el = document.getElementById('header-username');
+    if (el) el.textContent = (n||u).split(' ')[0].toUpperCase() + ' · DGL TALENT';
+  } else {
+    document.getElementById('login-gate').style.display = 'flex';
+    document.getElementById('app-root').style.display = 'none';
+  }
+})();
 </script>
 </body>
 </html>
