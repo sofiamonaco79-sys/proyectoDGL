@@ -287,6 +287,13 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 
 <aside class="sidebar">
   <div style="padding:16px 8px 8px">
+    <div class="sb-item" data-page="contactos" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">📋</span>Contactos
+    </div>
+    <div class="sb-item" data-page="clientes" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">🏢</span>Clientes
+    </div>
+    <div class="sb-divider" style="margin:8px 8px"></div>
     <div class="sb-item active" data-page="candidatos" style="border-radius:10px;margin-bottom:2px">
       <span class="sb-ico">👤</span>Candidatos
     </div>
@@ -541,7 +548,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
           <label>CV / Notas de entrevista (pegá el texto o adjuntá el archivo)</label>
           <textarea id="f-cv" placeholder="Pegá aquí el CV o notas de la entrevista para que la IA pre-complete el formulario..." style="min-height:90px"></textarea>
           <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
-            <label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Adjuntar CV<input type="file" id="f-cv-file" accept=".pdf,.doc,.docx,.txt" style="display:none" onchange="handleEvalFile(event)"></label>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Adjuntar CV<input type="file" id="f-cv-file" accept=".pdf,.txt" style="display:none" onchange="handleEvalFile(event)"></label>
             <span id="f-cv-file-name" style="font-size:12px;color:var(--muted)"></span>
           </div>
         </div>
@@ -932,12 +939,14 @@ function toggleGroup(id) {
 }
 
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['candidatos','posiciones','evaluacion','metricas','diplomatura'];
+const PAGES = ['contactos','clientes','candidatos','posiciones','evaluacion','metricas','diplomatura'];
 document.querySelectorAll('.sb-item[data-page]').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
     PAGES.forEach(x => document.getElementById('page-'+x).classList.toggle('active', x===p));
     document.querySelectorAll('.sb-item[data-page]').forEach(t => t.classList.toggle('active', t===b));
+    if (p==='contactos')   renderCrm();
+    if (p==='clientes')    renderClients();
     if (p==='candidatos')  renderCands();
     if (p==='posiciones')  renderPositions();
     if (p==='evaluacion')  populatePosDatalist();
@@ -1425,21 +1434,39 @@ let pendingEvalFile = null;
 
 function handleEvalFile(evt) {
   const f = evt.target.files[0]; if (!f) return;
-  if (f.size > 5*1024*1024) { alert('El archivo debe ser menor a 5MB.'); evt.target.value=''; return; }
-  const isText = f.type==='text/plain' || f.name.endsWith('.txt');
+  const ext = f.name.split('.').pop().toLowerCase();
+  const isPdf = f.type === 'application/pdf' || ext === 'pdf';
+  const isTxt = f.type === 'text/plain' || ext === 'txt';
+  const lbl = document.getElementById('f-cv-file-name');
+
+  if (!isPdf && !isTxt) {
+    lbl.textContent = '⚠ Formato no soportado';
+    alert('Formato no soportado: "' + f.name + '"\n\nUsá:\n• PDF — para CVs\n• TXT — para transcripciones Tactiq\n\nLos archivos .doc/.docx no pueden ser leídos directamente por la IA.');
+    evt.target.value = '';
+    return;
+  }
+  if (f.size > 8*1024*1024) {
+    alert('El archivo es demasiado grande (' + (f.size/1024/1024).toFixed(1) + ' MB). Máximo 8 MB.');
+    evt.target.value = ''; return;
+  }
+
+  lbl.textContent = '⏳ Leyendo ' + f.name + '...';
   const reader = new FileReader();
-  if (isText) {
+
+  if (isTxt) {
     reader.onload = ev => {
       document.getElementById('f-cv').value = ev.target.result;
-      document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name + ' (texto cargado)';
+      lbl.textContent = '✓ ' + f.name + ' — texto cargado en el campo de abajo';
       pendingEvalFile = {name: f.name, type: 'text/plain', data: null};
     };
+    reader.onerror = () => { lbl.textContent = '⚠ Error leyendo el archivo'; };
     reader.readAsText(f);
   } else {
     reader.onload = ev => {
-      pendingEvalFile = {name: f.name, type: f.type, data: ev.target.result};
-      document.getElementById('f-cv-file-name').textContent = '📎 ' + f.name + ' — listo para analizar con IA';
+      pendingEvalFile = {name: f.name, type: 'application/pdf', data: ev.target.result};
+      lbl.textContent = '✓ ' + f.name + ' — PDF listo, hacé clic en "Analizar con IA"';
     };
+    reader.onerror = () => { lbl.textContent = '⚠ Error leyendo el PDF'; };
     reader.readAsDataURL(f);
   }
 }
@@ -1530,7 +1557,9 @@ async function runAI() {
   } catch(e) {
     clearInterval(iv);
     AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step';s.querySelector('.ai-step-ico').textContent='✗';}});
-    document.getElementById('ai-lbl').textContent='⚠ ' + (e.message||'Error de red. Verificá la API Key y tu conexión.');
+    const errMsg = e.message||'Error de red. Verificá tu API Key en ⚙.';
+    document.getElementById('ai-lbl').textContent='⚠ ' + errMsg;
+    toast('Error IA: ' + errMsg);
     console.error('[DGL AI]', e);
   }
   btn.disabled=false;
