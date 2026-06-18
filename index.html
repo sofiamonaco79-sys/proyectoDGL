@@ -19,7 +19,7 @@
   --star:#d97706;
 }
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
-.app-header{display:flex;align-items:center;gap:10px;padding:0 20px;height:52px;background:linear-gradient(90deg,#080f1c 0%,#0a1929 100%);border-bottom:1px solid rgba(0,168,232,.18);position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
+.app-header{display:flex;align-items:center;gap:10px;padding:0 24px;height:58px;background:linear-gradient(135deg,#0c2040 0%,#0f2e58 60%,#0c2040 100%);border-bottom:2px solid rgba(0,168,232,.30);position:sticky;top:0;z-index:50}
 .logo{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:800;color:#fff;letter-spacing:-.5px;display:flex;align-items:baseline;gap:0}
 .logo-dot{color:var(--accent);font-size:20px;line-height:1;margin:0 1px}
 .logo-talent{font-weight:400;color:rgba(255,255,255,.82);letter-spacing:.02em}
@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,
 .erp-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);border:1px solid var(--accent-bd);color:var(--accent);font-weight:600;letter-spacing:.05em}
 /* ── SIDEBAR NAV ───────────────────────────────── */
 .sidebar{position:fixed;left:0;top:52px;width:224px;height:calc(100vh - 52px);background:#ffffff;border-right:1px solid var(--border);overflow-y:auto;padding:14px 0 24px;z-index:40;box-shadow:2px 0 12px rgba(0,0,0,0.05)}
-.sb-item{padding:11px 16px 11px 22px;cursor:pointer;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px;border-left:3px solid transparent;transition:all .15s;font-weight:500;user-select:none}
+.sb-item{padding:9px 16px 9px 16px;cursor:pointer;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px;border-left:3px solid transparent;transition:all .15s;font-weight:600;user-select:none;font-family:'Montserrat',sans-serif;letter-spacing:.01em}
 .sb-item:hover{color:var(--text);background:var(--surface2)}
 .sb-item.active{color:var(--accent);background:rgba(0,168,232,.08);border-left-color:var(--accent);font-weight:700}
 .sb-item.active.pipe-item{color:#0068b0;background:rgba(0,104,176,.07);border-left-color:#0080c0}
@@ -41,9 +41,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,
 .sb-group-hd.closed .sb-chevron{transform:rotate(-90deg)}
 .sb-group-body{overflow:hidden;transition:max-height .28s ease;max-height:300px}
 .sb-group-body.closed{max-height:0}
-.sb-sub{padding-left:44px;font-size:12px}
+.sb-sub{padding-left:22px;font-size:11.5px}
 .sb-divider{height:1px;background:var(--border);margin:10px 16px}
-.sb-ico{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.sb-ico{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:transform .15s}
+.sb-item[data-page=dashboard] .sb-ico{background:linear-gradient(135deg,rgba(0,168,232,.2),rgba(0,100,200,.15))}
+.pipe-item .sb-ico{background:linear-gradient(135deg,rgba(0,140,230,.18),rgba(0,80,210,.12))}
+.rrhh-item .sb-ico{background:linear-gradient(135deg,rgba(5,150,105,.18),rgba(3,100,70,.12))}
+.met-item .sb-ico{background:linear-gradient(135deg,rgba(217,119,6,.18),rgba(180,80,0,.12))}
+.sb-item:hover .sb-ico{transform:scale(1.08)}
 .page{display:none;padding:28px 32px;margin-left:224px;min-height:calc(100vh - 52px)}
 .page.active{display:block}
 
@@ -281,52 +286,59 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 </header>
 
 <aside class="sidebar">
-  <div class="sb-item active" data-page="dashboard">
-    <span class="sb-ico">🏠</span>Dashboard
+  <div style="padding:20px 16px 14px;border-bottom:1px solid var(--border)">
+    <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#9ab0c4;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px">Plataforma</div>
   </div>
 
-  <div class="sb-divider"></div>
-
-  <div class="sb-group-hd" onclick="toggleGroup('g-pipeline')">
-    <span class="sb-gicon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">📊</span>
-    Pipeline
-    <span class="sb-chevron">▾</span>
-  </div>
-  <div class="sb-group-body" id="g-pipeline">
-    <div class="sb-item sb-sub pipe-item" data-page="prospectos">
-      <span class="sb-ico">🎯</span>BD Pipeline
-    </div>
-    <div class="sb-item sb-sub pipe-item" data-page="clientes">
-      <span class="sb-ico">🏢</span>Clientes
-    </div>
-    <div class="sb-item sb-sub pipe-item" data-page="contactos">
-      <span class="sb-ico">📋</span>Contactos
+  <div style="padding:10px 8px 4px">
+    <div class="sb-item active" data-page="dashboard" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">🏠</span>Dashboard
     </div>
   </div>
 
-  <div class="sb-divider"></div>
-
-  <div class="sb-group-hd" onclick="toggleGroup('g-rrhh')">
-    <span class="sb-gicon" style="background:linear-gradient(135deg,#10b981,#059669)">👥</span>
-    RRHH
-    <span class="sb-chevron">▾</span>
+  <div style="padding:4px 8px 0">
+    <div style="padding:10px 8px 6px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:#9ab0c4;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleGroup('g-pipeline')">
+      <span style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0080e8,#0055b3);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">⬡</span>
+      Pipeline
+      <span class="sb-chevron" style="margin-left:auto">▾</span>
+    </div>
+    <div class="sb-group-body" id="g-pipeline" style="padding:0 0 6px">
+      <div class="sb-item sb-sub pipe-item" data-page="prospectos" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">🎯</span>BD Pipeline
+      </div>
+      <div class="sb-item sb-sub pipe-item" data-page="clientes" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">🏢</span>Clientes
+      </div>
+      <div class="sb-item sb-sub pipe-item" data-page="contactos" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">📋</span>Contactos
+      </div>
+    </div>
   </div>
-  <div class="sb-group-body" id="g-rrhh">
-    <div class="sb-item sb-sub rrhh-item" data-page="candidatos">
-      <span class="sb-ico">👤</span>Candidatos
+
+  <div style="padding:4px 8px 0">
+    <div style="padding:10px 8px 6px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:#9ab0c4;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleGroup('g-rrhh')">
+      <span style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#059669,#047857);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">◈</span>
+      RRHH
+      <span class="sb-chevron" style="margin-left:auto">▾</span>
     </div>
-    <div class="sb-item sb-sub rrhh-item" data-page="posiciones">
-      <span class="sb-ico">🔍</span>Posiciones
-    </div>
-    <div class="sb-item sb-sub rrhh-item" data-page="evaluacion">
-      <span class="sb-ico">✦</span>Evaluación
+    <div class="sb-group-body" id="g-rrhh" style="padding:0 0 6px">
+      <div class="sb-item sb-sub rrhh-item" data-page="candidatos" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">👤</span>Candidatos
+      </div>
+      <div class="sb-item sb-sub rrhh-item" data-page="posiciones" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">🔍</span>Posiciones
+      </div>
+      <div class="sb-item sb-sub rrhh-item" data-page="evaluacion" style="border-radius:10px;margin-bottom:2px">
+        <span class="sb-ico">⭐</span>Evaluación
+      </div>
     </div>
   </div>
 
-  <div class="sb-divider"></div>
-
-  <div class="sb-item met-item" data-page="metricas">
-    <span class="sb-ico">📈</span>Métricas
+  <div style="padding:4px 8px 0;margin-top:auto">
+    <div class="sb-divider" style="margin:8px 0"></div>
+    <div class="sb-item met-item" data-page="metricas" style="border-radius:10px">
+      <span class="sb-ico">📊</span>Métricas
+    </div>
   </div>
 </aside>
 
@@ -492,7 +504,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Empresa</th><th>Industria</th><th>Contacto</th><th>Email</th><th>Posiciones abiertas</th><th>Estado</th><th>Notas</th><th></th></tr></thead>
+        <thead><tr><th>Empresa</th><th>Industria</th><th>Contacto</th><th>Email</th><th>Pos. abiertas</th><th>Estado</th><th>Seguimiento</th><th>Notas</th><th></th></tr></thead>
         <tbody id="cli-tbody"></tbody>
         <!-- rows injected by renderClients() — Ver detalle button opens openClientDetail(id) -->
       </table>
@@ -766,7 +778,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
     <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
       <div class="form-row single" style="margin-bottom:8px"><div class="form-group">
         <label>Agregar nota</label>
-        <textarea id="tl-new-text" placeholder="Escribí el próximo paso, resultado de llamada, acuerdo..." style="min-height:60px"></textarea>
+        <textarea id="tl-new-text" placeholder="Nota, próximo paso, resultado de llamada, propuesta enviada, acuerdo alcanzado..." style="min-height:60px"></textarea>
       </div></div>
       <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap">
         <div style="display:flex;gap:8px;align-items:center">
@@ -953,6 +965,12 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
+function fmtDate(d) {
+  if (!d) return '—';
+  const s = (d+'').slice(0,10);
+  const [y,m,day] = s.split('-');
+  return (day&&m&&y) ? `${day}/${m}/${y}` : d;
+}
 
 // ─── DASHBOARD ────────────────────────────────────────────────
 function renderDashboard() {
@@ -1151,6 +1169,11 @@ function renderClients() {
   tb.innerHTML = fil.map(c => {
     const i = clients.indexOf(c);
     const openPos = positions.filter(p => p.cliente===c.empresa && (p.estado==='Abierta'||p.estado==='En proceso')).length;
+    const tl = timelines[c.id]||[];
+    const tlFiles = tl.filter(e=>e.file).length;
+    const lastEntry = tl.length ? tl[tl.length-1] : null;
+    const lastAct = lastEntry ? fmtDate(lastEntry.date) : (c.fecha ? fmtDate(c.fecha) : '—');
+    const safeEmp = (c.empresa||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     return `<tr>
       <td><div class="name-cell"><div class="avatar">${ini(c.empresa)}</div><div><div style="font-weight:500">${c.empresa}</div></div></div></td>
       <td style="font-size:12px;color:var(--muted)">${c.industria||'—'}</td>
@@ -1158,7 +1181,13 @@ function renderClients() {
       <td style="font-size:12px;color:var(--muted)">${c.email||'—'}</td>
       <td style="text-align:center"><span style="font-size:13px;font-weight:600;color:${openPos?'var(--accent)':'var(--muted2)'}">${openPos}</span></td>
       <td>${pEst(c.estado)}</td>
-      <td style="max-width:160px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notas||'—'}</td>
+      <td style="font-size:12px;white-space:nowrap">
+        <button class="btn btn-pipeline btn-sm" onclick="openTimeline('${c.id}','${safeEmp}')" style="font-size:11px;padding:5px 10px">
+          📝 ${tl.length} nota${tl.length!==1?'s':''}${tlFiles?' · 📎 '+tlFiles:''}
+        </button>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px">${lastAct}</div>
+      </td>
+      <td style="max-width:130px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notas||'—'}</td>
       <td><div style="display:flex;gap:4px">
         <button class="btn btn-ghost btn-sm" onclick="openClientDetail('${c.id}')">📊</button>
         <button class="btn btn-ghost btn-sm" onclick="openClientModal(${i})">✏</button>
@@ -1624,7 +1653,7 @@ function renderCrm() {
         <span style="width:8px;height:8px;border-radius:50%;background:${st.dot};flex-shrink:0;display:inline-block"></span>${st.label}
       </div></td>
       <td style="max-width:160px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.notes||'—'}</td>
-      <td style="font-size:12px;color:var(--muted)">${c.date||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${fmtDate(c.date)}</td>
       <td><div style="display:flex;gap:4px">${li}${em2}
         <button class="btn btn-ghost btn-sm" onclick="openCrmModal('${c.id}')">✏</button>
         <button class="btn btn-danger btn-sm" onclick="delCrmContact('${c.id}')">🗑</button>
@@ -1907,7 +1936,7 @@ function quickAttachFile(evt, prospId) {
 function openTimeline(entityId, name) {
   tlEntityId = entityId;
   tlPendingFile = null;
-  document.getElementById('tl-title').textContent = '📝 Historial · ' + name;
+  document.getElementById('tl-title').textContent = '📝 Seguimiento · ' + name;
   document.getElementById('tl-new-text').value = '';
   document.getElementById('tl-file-name').textContent = '';
   renderTimeline();
@@ -1926,7 +1955,7 @@ function renderTimeline() {
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:10px">📎 Documentos adjuntos (${docs.length})</div>
       ${docs.map(e=>`
         <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:12px;color:var(--accent);font-weight:600">${e.date||'—'}</span>
+          <span style="font-size:12px;color:var(--accent);font-weight:600">${fmtDate(e.date)}</span>
           <div class="tl-file" onclick="downloadTlFile('${e.id}','${tlEntityId}')" style="flex:1">📎 ${e.fileName||'archivo'}</div>
           <span style="font-size:11px;color:var(--muted2)">${e.author||''}</span>
         </div>`).join('')}
@@ -1944,7 +1973,7 @@ function renderTimeline() {
       <div class="tl-body">
         ${e.text ? `<div class="tl-text">${e.text}</div>` : ''}
         ${fileHtml}
-        <div class="tl-meta">${OWN_LABEL[e.author]||e.author||'—'} · ${(e.date||'').slice(0,10)}</div>
+        <div class="tl-meta">${OWN_LABEL[e.author]||e.author||'—'} · ${fmtDate(e.date)}</div>
       </div>
     </div>`;
   }).join('');
@@ -1952,7 +1981,7 @@ function renderTimeline() {
 
 function handleTlFile(evt) {
   const f = evt.target.files[0]; if (!f) return;
-  if (f.size > 2*1024*1024) { alert('El archivo debe ser menor a 2MB.'); evt.target.value=''; return; }
+  if (f.size > 8*1024*1024) { alert('El archivo debe ser menor a 8MB.'); evt.target.value=''; return; }
   const reader = new FileReader();
   reader.onload = ev => {
     tlPendingFile = {name: f.name, type: f.type, data: ev.target.result};
@@ -1985,6 +2014,7 @@ function addTimelineEntry() {
   document.getElementById('tl-file-input').value='';
   renderTimeline();
   renderProspectos();
+  renderClients();
   toast('Nota agregada');
 }
 
