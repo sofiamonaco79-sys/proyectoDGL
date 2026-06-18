@@ -1529,16 +1529,19 @@ async function runAI() {
     msgContent = `CV / Notas de entrevista:\n${cvText}${roleNote}`;
   }
 
+  const reqHeaders = {
+    'Content-Type':'application/json',
+    'x-api-key': localStorage.getItem('dgl_api_key')||'',
+    'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
+  };
+  if (hasPdf) reqHeaders['anthropic-beta'] = 'pdfs-2024-09-25';
+
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': localStorage.getItem('dgl_api_key')||'',
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:SYS,messages:[{role:'user',content:msgContent}]})
+      headers: reqHeaders,
+      body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:SYS,messages:[{role:'user',content:msgContent}]})
     });
     clearInterval(iv);
     const data = await r.json();
