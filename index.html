@@ -641,7 +641,9 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
         <select id="cr-status">
           <option value="new">Sin contactar</option><option value="sent">Mensaje enviado</option>
           <option value="replied">Respondió</option><option value="meeting">Reunión agendada</option>
-          <option value="proposal">Propuesta enviada</option><option value="closed">Cerrado ✓</option>
+          <option value="proposal">Propuesta enviada</option>
+          <option value="cliente">⭐ Cliente ✓</option>
+          <option value="closed">Cerrado ✓</option>
           <option value="discard">Descartado</option>
         </select>
       </div>
@@ -830,11 +832,13 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
     </div>
     <div class="tab-inner" id="cd-tabs">
       <button class="tab-inner-btn active" onclick="switchCdTab('info')">Info</button>
+      <button class="tab-inner-btn" onclick="switchCdTab('seguimiento')" style="color:var(--accent);font-weight:700">📎 Seguimiento</button>
       <button class="tab-inner-btn" onclick="switchCdTab('posiciones')">Búsquedas</button>
       <button class="tab-inner-btn" onclick="switchCdTab('candidatos')">Candidatos</button>
       <button class="tab-inner-btn" onclick="switchCdTab('cobranza')">Cobranza</button>
     </div>
     <div id="cd-pane-info" class="tab-inner-pane active"></div>
+    <div id="cd-pane-seguimiento" class="tab-inner-pane"></div>
     <div id="cd-pane-posiciones" class="tab-inner-pane"></div>
     <div id="cd-pane-candidatos" class="tab-inner-pane"></div>
     <div id="cd-pane-cobranza" class="tab-inner-pane"></div>
@@ -1553,6 +1557,7 @@ const CRM_STATUS = {
   replied:  {label:'Respondió',     dot:'var(--ok)'},
   meeting:  {label:'Reunión agend.',dot:'var(--warn)'},
   proposal: {label:'Propuesta env.',dot:'var(--accent)'},
+  cliente:  {label:'⭐ Cliente',     dot:'#00a8e8'},
   closed:   {label:'Cerrado ✓',     dot:'var(--ok)'},
   discard:  {label:'Descartado',    dot:'var(--err)'},
 };
@@ -1690,16 +1695,50 @@ function saveCrmContact() {
     date:     document.getElementById('cr-date').value,
     notes:    document.getElementById('cr-notes').value.trim(),
   };
+  const prevStatus = crmEditId ? (crmContacts.find(c=>c.id===crmEditId)||{}).status : null;
   if (crmEditId) { const idx=crmContacts.findIndex(c=>c.id===crmEditId); crmContacts[idx]=obj; }
   else crmContacts.unshift(obj);
   saveToSheets(); closeCrmModal(); renderCrm();
   toast(crmEditId ? 'Contacto actualizado' : 'Contacto guardado');
+  if (obj.status === 'cliente' && prevStatus !== 'cliente') convertCrmContactToClient(obj);
 }
 function delCrmContact(id) {
   if (!confirm('¿Eliminar este contacto?')) return;
   crmContacts = crmContacts.filter(c=>c.id!==id);
   saveToSheets(); renderCrm();
   toast('Contacto eliminado');
+}
+
+function convertCrmContactToClient(contact) {
+  const empresa = (contact.company||contact.name||'').trim();
+  if (!empresa) { toast('El contacto no tiene empresa asignada'); return; }
+  const exists = clients.find(c => c.empresa.toLowerCase() === empresa.toLowerCase());
+  if (exists) {
+    toast('Ya existe el cliente "' + empresa + '"');
+    setTimeout(() => { document.querySelector('.sb-item[data-page=clientes]').click(); setTimeout(()=>openClientDetail(exists.id),500); }, 350);
+    return;
+  }
+  const newClient = {
+    id:       uid(),
+    empresa,
+    contacto: contact.name || '',
+    cargo:    contact.role || '',
+    email:    contact.email || '',
+    industria:'',
+    tel:      '',
+    resp:     contact.owner || 'sofia',
+    estado:   'Potencial',
+    notas:    contact.notes || '',
+    fecha:    new Date().toISOString().split('T')[0],
+    fromCrm:  contact.id,
+  };
+  clients.push(newClient);
+  S('dgl_clients_v1', clients);
+  toast('⭐ ' + empresa + ' agregado a Clientes');
+  setTimeout(() => {
+    document.querySelector('.sb-item[data-page=clientes]').click();
+    setTimeout(() => { openClientDetail(newClient.id); switchCdTab('seguimiento'); }, 600);
+  }, 350);
 }
 function exportCrmCSV() {
   if (!crmContacts.length) { alert('No hay contactos.'); return; }
@@ -2099,17 +2138,18 @@ function openClientDetail(id) {
 function closeClientDetail() { document.getElementById('mod-client-detail').classList.remove('open'); cdClientId=null; }
 
 function switchCdTab(tab) {
-  ['info','posiciones','candidatos','cobranza'].forEach(t => {
+  ['info','seguimiento','posiciones','candidatos','cobranza'].forEach(t => {
     document.getElementById('cd-pane-'+t).classList.toggle('active', t===tab);
   });
   document.querySelectorAll('#cd-tabs .tab-inner-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['info','posiciones','candidatos','cobranza'][i]===tab);
+    b.classList.toggle('active', ['info','seguimiento','posiciones','candidatos','cobranza'][i]===tab);
   });
   const c = clients.find(x=>x.id===cdClientId); if (!c) return;
-  if (tab==='info')       renderCdInfo(c);
-  if (tab==='posiciones') renderCdPositions(c);
-  if (tab==='candidatos') renderCdCandidates(c);
-  if (tab==='cobranza')   renderCdBilling(c);
+  if (tab==='info')        renderCdInfo(c);
+  if (tab==='seguimiento') renderCdSeguimiento(c);
+  if (tab==='posiciones')  renderCdPositions(c);
+  if (tab==='candidatos')  renderCdCandidates(c);
+  if (tab==='cobranza')    renderCdBilling(c);
 }
 
 function renderCdInfo(c) {
@@ -2123,6 +2163,94 @@ function renderCdInfo(c) {
     <div class="drow"><span class="dk">Responsable DGL</span><span class="dv">${c.resp||'—'}</span></div>
     <div class="drow"><span class="dk">Estado</span><span class="dv">${pEst(c.estado)}</span></div>
     ${c.notas?`<div class="drow" style="flex-direction:column;gap:4px"><span class="dk">Notas</span><span style="font-size:13px;margin-top:4px;line-height:1.5">${c.notas}</span></div>`:''}`;
+}
+
+let cdPendingFile = null;
+
+function renderCdSeguimiento(c) {
+  const pane = document.getElementById('cd-pane-seguimiento');
+  const tl = timelines[c.id]||[];
+  const entries = tl.slice().reverse();
+  const docs = tl.filter(e=>e.file).sort((a,b)=>a.date>b.date?-1:1);
+
+  const docsHtml = docs.length ? `
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:16px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:10px;font-family:Montserrat,sans-serif">📎 Documentos adjuntos (${docs.length})</div>
+      ${docs.map(e=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--accent);font-weight:600">${fmtDate(e.date)}</span>
+          <div class="tl-file" onclick="downloadTlFile('${e.id}','${c.id}')" style="flex:1">📎 ${e.fileName||'archivo'}</div>
+          <span style="font-size:11px;color:var(--muted2)">${OWN_LABEL[e.author]||e.author||''}</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  const entriesHtml = entries.length ? entries.map(e => {
+    const fileHtml = e.file ? `<div class="tl-file" onclick="downloadTlFile('${e.id}','${c.id}')">📎 ${e.fileName||'archivo'}</div>` : '';
+    return `<div class="tl-item">
+      <div class="tl-dot" style="background:var(--accent)"></div>
+      <div class="tl-body">
+        ${e.text ? `<div class="tl-text">${e.text}</div>` : ''}
+        ${fileHtml}
+        <div class="tl-meta">${OWN_LABEL[e.author]||e.author||'—'} · ${fmtDate(e.date)}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty" style="padding:20px 0"><span>Sin notas todavía. Agregá propuestas, conversaciones o archivos.</span></div>';
+
+  pane.innerHTML = `
+    <div style="margin-bottom:16px">
+      <div class="sec-title" style="margin-bottom:12px">Historial comercial</div>
+      ${docsHtml}
+      <div class="timeline">${entriesHtml}</div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <div class="form-group" style="margin-bottom:10px">
+        <label>Nueva nota / documento</label>
+        <textarea id="cd-tl-text" placeholder="Propuesta enviada, reunión con analista, acuerdo, próximo paso..." style="min-height:70px"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="btn btn-pipeline btn-sm" style="cursor:pointer">📎 Adjuntar archivo<input type="file" id="cd-tl-file" style="display:none" onchange="handleCdTlFile(event)"></label>
+          <span id="cd-tl-fname" style="font-size:12px;color:var(--muted)"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="cd-tl-author" style="font-size:13px;padding:7px 11px;border:1px solid var(--border2);border-radius:8px;background:var(--surface2);color:var(--text)">
+            <option value="sofia">Sofía</option><option value="daniel">Daniel</option>
+            <option value="facundo">Facundo</option><option value="pablo">Pablo</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="addCdNote('${c.id}')">Agregar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function handleCdTlFile(evt) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 8*1024*1024) { alert('El archivo debe ser menor a 8MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    cdPendingFile = {name: f.name, type: f.type, data: ev.target.result};
+    document.getElementById('cd-tl-fname').textContent = '📎 ' + f.name;
+  };
+  reader.readAsDataURL(f);
+}
+
+function addCdNote(clientId) {
+  const text = (document.getElementById('cd-tl-text').value||'').trim();
+  const author = document.getElementById('cd-tl-author').value;
+  if (!text && !cdPendingFile) { alert('Escribí una nota o adjuntá un archivo.'); return; }
+  if (!timelines[clientId]) timelines[clientId]=[];
+  const entry = {id:uid(), date:new Date().toISOString(), author, text, type:'nota'};
+  if (cdPendingFile) { entry.file=cdPendingFile.data; entry.fileName=cdPendingFile.name; }
+  timelines[clientId].push(entry);
+  S('dgl_timelines_v1', timelines);
+  document.getElementById('cd-tl-text').value='';
+  document.getElementById('cd-tl-fname').textContent='';
+  cdPendingFile=null;
+  const fi=document.getElementById('cd-tl-file'); if(fi) fi.value='';
+  renderClients();
+  const c = clients.find(x=>x.id===clientId);
+  if (c) renderCdSeguimiento(c);
+  toast('Nota agregada ✓');
 }
 
 function renderCdPositions(c) {
