@@ -27,11 +27,25 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .header-right{display:flex;align-items:center;gap:12px;margin-left:auto}
 .header-user{font-size:12px;color:var(--muted)}
 .erp-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);border:1px solid var(--accent-bd);color:var(--accent);font-weight:600;letter-spacing:.05em}
-.nav-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto}
-.nav-tab{padding:11px 18px;font-size:13px;cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s}
-.nav-tab:hover:not(.active){color:var(--text)}
-.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.page{display:none;padding:20px;max-width:1400px;margin:0 auto}
+/* ── SIDEBAR NAV ───────────────────────────────── */
+.sidebar{position:fixed;left:0;top:52px;width:224px;height:calc(100vh - 52px);background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:14px 0 24px;z-index:40}
+.sb-item{padding:11px 16px 11px 22px;cursor:pointer;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px;border-left:3px solid transparent;transition:all .15s;font-weight:500;user-select:none}
+.sb-item:hover{color:var(--text);background:var(--surface2)}
+.sb-item.active{color:var(--accent);background:rgba(124,106,247,.1);border-left-color:var(--accent);font-weight:600}
+.sb-item.active.pipe-item{color:#60a5fa;background:rgba(59,130,246,.1);border-left-color:#3b82f6}
+.sb-item.active.rrhh-item{color:#34d399;background:rgba(16,185,129,.1);border-left-color:#10b981}
+.sb-item.active.met-item{color:var(--warn);background:rgba(251,191,36,.1);border-left-color:var(--warn)}
+.sb-group-hd{padding:16px 16px 7px 22px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted2);cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;transition:color .15s}
+.sb-group-hd:hover{color:var(--muted)}
+.sb-gicon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.sb-chevron{margin-left:auto;font-size:10px;transition:transform .2s;opacity:.5}
+.sb-group-hd.closed .sb-chevron{transform:rotate(-90deg)}
+.sb-group-body{overflow:hidden;transition:max-height .28s ease;max-height:300px}
+.sb-group-body.closed{max-height:0}
+.sb-sub{padding-left:44px;font-size:12px}
+.sb-divider{height:1px;background:var(--border);margin:10px 16px}
+.sb-ico{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.page{display:none;padding:24px 28px;margin-left:224px}
 .page.active{display:block}
 
 /* KPIs */
@@ -76,19 +90,26 @@ tbody tr:hover td{background:var(--surface2)}
 select option{background:var(--surface2);color:var(--text)}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent2)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;white-space:nowrap;letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 14px rgba(124,106,247,.32)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,106,247,.48)}
 .btn-secondary{background:var(--surface2);border:1px solid var(--border2);color:var(--muted)}
 .btn-secondary:hover{color:var(--text)}
 .btn-ghost{background:none;border:1px solid var(--border2);color:var(--muted)}
-.btn-ghost:hover{color:var(--text)}
+.btn-ghost:hover{color:var(--text);background:var(--surface2)}
 .btn-danger{background:none;border:1px solid rgba(248,113,113,.3);color:var(--err)}
 .btn-danger:hover{background:var(--err-bg)}
-.btn-ai{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
-.btn-ai:hover{opacity:.9}
-.btn-ai:disabled{opacity:.5;cursor:not-allowed}
-.btn-sm{padding:5px 10px;font-size:12px}
+.btn-ai{background:linear-gradient(135deg,#a78bfa,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(124,106,247,.38)}
+.btn-ai:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(124,106,247,.55)}
+.btn-ai:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-pipeline{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.32)}
+.btn-pipeline:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.48)}
+.btn-rrhh{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,.32)}
+.btn-rrhh:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.48)}
+.btn-ok{background:linear-gradient(135deg,#34d399,#059669);color:#fff;box-shadow:0 4px 14px rgba(52,211,153,.3)}
+.btn-ok:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(52,211,153,.45)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-sm:hover{transform:translateY(-1px)}
 .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 
 /* Pills */
@@ -228,8 +249,18 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 /* Report preview */
 .report-box{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:16px;font-size:12px;font-family:'Courier New',monospace;white-space:pre-wrap;line-height:1.6;color:var(--text);max-height:400px;overflow-y:auto}
 
+/* Métricas */
+.met-bar-track{height:10px;background:var(--surface3);border-radius:5px;overflow:hidden;margin-top:5px}
+.met-bar-fill{height:100%;border-radius:5px;transition:width .5s ease}
+
 /* Responsive */
+@media(max-width:1024px){
+  .sidebar{width:180px}
+  .page{margin-left:180px}
+}
 @media(max-width:768px){
+  .sidebar{display:none}
+  .page{margin-left:0;padding:16px}
   .kpi-grid-5,.kpi-grid-4{grid-template-columns:repeat(2,1fr)}
   .form-row,.form-row.triple{grid-template-columns:1fr}
   .dash-row{grid-template-columns:1fr}
@@ -250,15 +281,55 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
   </div>
 </header>
 
-<nav class="nav-tabs">
-  <button class="nav-tab active" data-page="dashboard">🏠 Dashboard</button>
-  <button class="nav-tab" data-page="contactos">📋 Contactos</button>
-  <button class="nav-tab" data-page="prospectos">🎯 BD Pipeline</button>
-  <button class="nav-tab" data-page="clientes">🏢 Clientes</button>
-  <button class="nav-tab" data-page="posiciones">🔍 Posiciones</button>
-  <button class="nav-tab" data-page="candidatos">👤 Candidatos</button>
-  <button class="nav-tab" data-page="evaluacion">✦ Nueva Evaluación</button>
-</nav>
+<aside class="sidebar">
+  <div class="sb-item active" data-page="dashboard">
+    <span class="sb-ico">🏠</span>Dashboard
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-group-hd" onclick="toggleGroup('g-pipeline')">
+    <span class="sb-gicon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">📊</span>
+    Pipeline
+    <span class="sb-chevron">▾</span>
+  </div>
+  <div class="sb-group-body" id="g-pipeline">
+    <div class="sb-item sb-sub pipe-item" data-page="prospectos">
+      <span class="sb-ico">🎯</span>BD Pipeline
+    </div>
+    <div class="sb-item sb-sub pipe-item" data-page="clientes">
+      <span class="sb-ico">🏢</span>Clientes
+    </div>
+    <div class="sb-item sb-sub pipe-item" data-page="contactos">
+      <span class="sb-ico">📋</span>Contactos
+    </div>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-group-hd" onclick="toggleGroup('g-rrhh')">
+    <span class="sb-gicon" style="background:linear-gradient(135deg,#10b981,#059669)">👥</span>
+    RRHH
+    <span class="sb-chevron">▾</span>
+  </div>
+  <div class="sb-group-body" id="g-rrhh">
+    <div class="sb-item sb-sub rrhh-item" data-page="candidatos">
+      <span class="sb-ico">👤</span>Candidatos
+    </div>
+    <div class="sb-item sb-sub rrhh-item" data-page="posiciones">
+      <span class="sb-ico">🔍</span>Posiciones
+    </div>
+    <div class="sb-item sb-sub rrhh-item" data-page="evaluacion">
+      <span class="sb-ico">✦</span>Evaluación
+    </div>
+  </div>
+
+  <div class="sb-divider"></div>
+
+  <div class="sb-item met-item" data-page="metricas">
+    <span class="sb-ico">📈</span>Métricas
+  </div>
+</aside>
 
 <!-- ═══════════════════════════════════════════════════════ CONTACTOS -->
 <div id="page-contactos" class="page">
@@ -766,6 +837,11 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════ MÉTRICAS -->
+<div id="page-metricas" class="page">
+  <div id="met-content"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -787,13 +863,21 @@ let timelines   = L('dgl_timelines_v1', {});
 let crmEditId   = null;
 let crmSyncing  = false;
 
+// ─── SIDEBAR TOGGLE ───────────────────────────────────────────
+function toggleGroup(id) {
+  const body = document.getElementById(id);
+  const hd   = body.previousElementSibling;
+  const closed = body.classList.toggle('closed');
+  hd.classList.toggle('closed', closed);
+}
+
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['dashboard','contactos','prospectos','candidatos','clientes','posiciones','evaluacion'];
-document.querySelectorAll('.nav-tab').forEach(b => {
+const PAGES = ['dashboard','contactos','prospectos','candidatos','clientes','posiciones','evaluacion','metricas'];
+document.querySelectorAll('.sb-item[data-page]').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
     PAGES.forEach(x => document.getElementById('page-'+x).classList.toggle('active', x===p));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t===b));
+    document.querySelectorAll('.sb-item[data-page]').forEach(t => t.classList.toggle('active', t===b));
     if (p==='dashboard')   renderDashboard();
     if (p==='contactos')   renderCrm();
     if (p==='prospectos')  renderProspectos();
@@ -801,6 +885,7 @@ document.querySelectorAll('.nav-tab').forEach(b => {
     if (p==='clientes')    renderClients();
     if (p==='posiciones')  renderPositions();
     if (p==='evaluacion')  populatePosDatalist();
+    if (p==='metricas')    renderMetricas();
   });
 });
 
@@ -2046,6 +2131,136 @@ function buildReport(c) {
 function copyReport() {
   const c = cands[reportIdx]; if (!c) return;
   navigator.clipboard.writeText(buildReport(c)).then(()=>toast('Reporte copiado al portapapeles'));
+}
+
+// ─── MÉTRICAS ─────────────────────────────────────────────────
+function renderMetricas() {
+  const prosAct = prospectos.filter(p => p.stage !== 'perdido');
+  const stageCounts = {};
+  STAGE_ORDER.forEach(s => { stageCounts[s] = prospectos.filter(p => p.stage === s).length; });
+  const totalPros = prospectos.length || 1;
+  const clienteCount = stageCounts['cliente'] || 0;
+  const convRate = Math.round(clienteCount / totalPros * 100);
+
+  const contratados = cands.filter(c => c.clientStatus === 'contratado').length;
+  const conOferta   = cands.filter(c => c.clientStatus === 'oferta').length;
+  const entrevistados = cands.filter(c => c.clientStatus === 'entrevistado').length;
+  const presentados = cands.filter(c => c.clientStatus === 'presentado').length;
+
+  const posAbiertas = positions.filter(p => p.status === 'open').length;
+  const posCerradas = positions.filter(p => p.status === 'closed').length;
+
+  const billPend  = billing.filter(b => b.estado==='Pendiente'||b.estado==='Vencido').reduce((s,b)=>s+Number(b.monto||0),0);
+  const billPagado = billing.filter(b=>b.estado==='Pagado').reduce((s,b)=>s+Number(b.monto||0),0);
+
+  const scored = cands.filter(c=>avg(c)>0);
+  const avgSc  = scored.length ? (scored.reduce((s,c)=>s+avg(c),0)/scored.length).toFixed(1) : '—';
+
+  const pct = (n,tot) => tot>0 ? Math.max(Math.round(n/tot*100),n>0?4:0) : 0;
+  const SCOL = {prospecto:'#9095b0',calificado:'#60a5fa',propuesta:'#7c6af7',negociacion:'#fbbf24',cliente:'#34d399',perdido:'#f87171'};
+
+  const funnelBars = STAGE_ORDER.filter(s=>s!=='perdido').map(s=>{
+    const cnt=stageCounts[s]||0;
+    const w=pct(cnt,prospectos.length);
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+        <span style="color:var(--muted);font-weight:500">${STAGES[s]}</span>
+        <span style="font-weight:700;color:${SCOL[s]}">${cnt}</span>
+      </div>
+      <div class="met-bar-track"><div class="met-bar-fill" style="width:${w}%;background:${SCOL[s]}"></div></div>
+    </div>`;
+  }).join('');
+
+  const candBars = [
+    {l:'Presentados',n:presentados,c:'#60a5fa'},
+    {l:'Entrevistados',n:entrevistados,c:'#7c6af7'},
+    {l:'Con oferta',n:conOferta,c:'#fbbf24'},
+    {l:'Contratados',n:contratados,c:'#34d399'},
+  ].map(({l,n,c})=>`<div style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+      <span style="color:var(--muted);font-weight:500">${l}</span>
+      <span style="font-weight:700;color:${c}">${n}</span>
+    </div>
+    <div class="met-bar-track"><div class="met-bar-fill" style="width:${pct(n,cands.length||1)}%;background:${c}"></div></div>
+  </div>`).join('');
+
+  document.getElementById('met-content').innerHTML = `
+    <div style="margin-bottom:28px">
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px">Métricas</h2>
+      <p style="color:var(--muted);font-size:13px">Resumen ejecutivo · Pipeline & RRHH</p>
+    </div>
+
+    <div class="kpi-grid kpi-grid-5" style="margin-bottom:24px">
+      <div class="kpi" style="border-top:3px solid #3b82f6">
+        <div class="kpi-label">Prospectos activos</div>
+        <div class="kpi-value" style="color:#60a5fa">${prosAct.length}</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid var(--ok)">
+        <div class="kpi-label">Tasa conversión</div>
+        <div class="kpi-value" style="color:var(--ok)">${convRate}%</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid var(--accent)">
+        <div class="kpi-label">Posiciones abiertas</div>
+        <div class="kpi-value" style="color:var(--accent)">${posAbiertas}</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid var(--ok)">
+        <div class="kpi-label">Contratados</div>
+        <div class="kpi-value" style="color:var(--ok)">${contratados}</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid var(--warn)">
+        <div class="kpi-label">Cobranza pendiente</div>
+        <div class="kpi-value" style="font-size:18px;color:var(--warn)">USD ${billPend.toLocaleString()}</div>
+      </div>
+    </div>
+
+    <div class="dash-row" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 Funnel Pipeline</span>
+          <span style="font-size:11px;color:var(--muted)">${prospectos.length} total · ${clienteCount} clientes</span>
+        </div>
+        <div class="card-body">
+          ${prospectos.length ? funnelBars : '<div class="empty" style="padding:20px 0">Sin prospectos aún</div>'}
+          <div style="padding-top:12px;border-top:1px solid var(--border);display:flex;gap:20px;font-size:12px;margin-top:4px">
+            <span style="color:var(--muted)">Perdidos: <b style="color:var(--err)">${stageCounts['perdido']||0}</b></span>
+            <span style="color:var(--muted)">Cierre: <b style="color:var(--ok)">${convRate}%</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">👥 Candidatos por estado</span>
+          <span style="font-size:11px;color:var(--muted)">${cands.length} evaluados · Score prom <b style="color:var(--star)">${avgSc}/5</b></span>
+        </div>
+        <div class="card-body">
+          ${cands.length ? candBars : '<div class="empty" style="padding:20px 0">Sin candidatos aún</div>'}
+          <div style="padding-top:12px;border-top:1px solid var(--border);display:flex;gap:20px;font-size:12px;margin-top:4px">
+            <span style="color:var(--muted)">Posiciones cerradas: <b style="color:var(--text)">${posCerradas}</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-title">💰 Cobranza</span></div>
+      <div class="card-body">
+        <div class="kpi-grid kpi-grid-3">
+          <div class="kpi" style="border-top:3px solid var(--muted2)">
+            <div class="kpi-label">Total generado</div>
+            <div class="kpi-value" style="font-size:20px">USD ${(billPagado+billPend).toLocaleString()}</div>
+          </div>
+          <div class="kpi" style="border-top:3px solid var(--ok)">
+            <div class="kpi-label">Cobrado</div>
+            <div class="kpi-value" style="font-size:20px;color:var(--ok)">USD ${billPagado.toLocaleString()}</div>
+          </div>
+          <div class="kpi" style="border-top:3px solid var(--warn)">
+            <div class="kpi-label">Pendiente</div>
+            <div class="kpi-value" style="font-size:20px;color:var(--warn)">USD ${billPend.toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
 // ─── MODAL CLOSE ON OVERLAY ────────────────────────────────────
