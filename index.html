@@ -286,59 +286,20 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 </header>
 
 <aside class="sidebar">
-  <div style="padding:20px 16px 14px;border-bottom:1px solid var(--border)">
-    <div style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:#9ab0c4;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px">Plataforma</div>
-  </div>
-
-  <div style="padding:10px 8px 4px">
-    <div class="sb-item active" data-page="dashboard" style="border-radius:10px;margin-bottom:2px">
-      <span class="sb-ico">🏠</span>Dashboard
+  <div style="padding:16px 8px 8px">
+    <div class="sb-item active" data-page="candidatos" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">👤</span>Candidatos
     </div>
-  </div>
-
-  <div style="padding:4px 8px 0">
-    <div style="padding:10px 8px 6px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:#9ab0c4;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleGroup('g-pipeline')">
-      <span style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#0080e8,#0055b3);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">⬡</span>
-      Pipeline
-      <span class="sb-chevron" style="margin-left:auto">▾</span>
+    <div class="sb-item" data-page="posiciones" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">🔍</span>Posiciones
     </div>
-    <div class="sb-group-body" id="g-pipeline" style="padding:0 0 6px">
-      <div class="sb-item sb-sub pipe-item" data-page="prospectos" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">🎯</span>BD Pipeline
-      </div>
-      <div class="sb-item sb-sub pipe-item" data-page="clientes" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">🏢</span>Clientes
-      </div>
-      <div class="sb-item sb-sub pipe-item" data-page="contactos" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">📋</span>Contactos
-      </div>
+    <div class="sb-item" data-page="evaluacion" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">⭐</span>Evaluación
     </div>
-  </div>
-
-  <div style="padding:4px 8px 0">
-    <div style="padding:10px 8px 6px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:#9ab0c4;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleGroup('g-rrhh')">
-      <span style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#059669,#047857);display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">◈</span>
-      RRHH
-      <span class="sb-chevron" style="margin-left:auto">▾</span>
+    <div class="sb-item" data-page="diplomatura" style="border-radius:10px;margin-bottom:2px">
+      <span class="sb-ico">🎓</span>Diplomatura
     </div>
-    <div class="sb-group-body" id="g-rrhh" style="padding:0 0 6px">
-      <div class="sb-item sb-sub rrhh-item" data-page="candidatos" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">👤</span>Candidatos
-      </div>
-      <div class="sb-item sb-sub rrhh-item" data-page="posiciones" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">🔍</span>Posiciones
-      </div>
-      <div class="sb-item sb-sub rrhh-item" data-page="evaluacion" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">⭐</span>Evaluación
-      </div>
-      <div class="sb-item sb-sub rrhh-item" data-page="diplomatura" style="border-radius:10px;margin-bottom:2px">
-        <span class="sb-ico">🎓</span>Diplomatura
-      </div>
-    </div>
-  </div>
-
-  <div style="padding:4px 8px 0;margin-top:auto">
-    <div class="sb-divider" style="margin:8px 0"></div>
+    <div class="sb-divider" style="margin:10px 8px"></div>
     <div class="sb-item met-item" data-page="metricas" style="border-radius:10px">
       <span class="sb-ico">📊</span>Métricas
     </div>
@@ -428,7 +389,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
-<div id="page-dashboard" class="page active">
+<div id="page-dashboard" class="page">
   <div class="kpi-grid kpi-grid-5" id="dash-kpis"></div>
   <div class="dash-row">
     <div class="card">
@@ -451,7 +412,7 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ CANDIDATOS -->
-<div id="page-candidatos" class="page">
+<div id="page-candidatos" class="page active">
   <div class="kpi-grid kpi-grid-4" id="cand-kpis"></div>
   <div class="card">
     <div class="card-header">
@@ -971,17 +932,13 @@ function toggleGroup(id) {
 }
 
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['dashboard','contactos','prospectos','candidatos','clientes','posiciones','evaluacion','metricas','diplomatura'];
+const PAGES = ['candidatos','posiciones','evaluacion','metricas','diplomatura'];
 document.querySelectorAll('.sb-item[data-page]').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
     PAGES.forEach(x => document.getElementById('page-'+x).classList.toggle('active', x===p));
     document.querySelectorAll('.sb-item[data-page]').forEach(t => t.classList.toggle('active', t===b));
-    if (p==='dashboard')   renderDashboard();
-    if (p==='contactos')   renderCrm();
-    if (p==='prospectos')  renderProspectos();
     if (p==='candidatos')  renderCands();
-    if (p==='clientes')    renderClients();
     if (p==='posiciones')  renderPositions();
     if (p==='evaluacion')  populatePosDatalist();
     if (p==='metricas')    renderMetricas();
@@ -2751,7 +2708,7 @@ function exportDiplCSV() {
 // ─── INIT ─────────────────────────────────────────────────────
 initScoreGrid();
 loadFromSheets();
-renderDashboard();
+renderCands();
 </script>
 </body>
 </html>
