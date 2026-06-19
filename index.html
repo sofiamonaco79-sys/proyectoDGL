@@ -531,7 +531,13 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
         <thead><tr><th>Candidato</th><th>Posición</th><th>Entrevista</th><th>Score</th><th>Estado proceso</th><th>Recomendación</th><th></th></tr></thead>
         <tbody id="cand-tbody"></tbody>
       </table>
-      <div id="cand-empty" class="empty" style="display:none"><span class="empty-ico">👤</span>No hay candidatos evaluados.<br>Usá <strong>Nueva Evaluación</strong> para cargar el primero.</div>
+      <div id="cand-empty" class="empty" style="display:none">
+        <span class="empty-ico">👤</span>
+        No hay candidatos evaluados.<br>Usá <strong>Nueva Evaluación</strong> para cargar el primero.
+        <div style="margin-top:16px">
+          <button class="btn btn-ghost btn-sm" onclick="diagStorage()" style="font-size:11px;opacity:.6">¿Perdiste datos? → Diagnóstico</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1095,7 +1101,8 @@ document.querySelectorAll('.sb-item[data-page]').forEach(b => {
 // ─── UTILS ────────────────────────────────────────────────────
 const ini = n => (n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avg = c => {
-  const vs = DIMS.map(d => c.scores[d.key]||0).filter(v=>v>0);
+  if (!c.scores) return 0;
+  const vs = DIMS.map(d => (c.scores[d.key])||0).filter(v=>v>0);
   if (!vs.length) return 0;
   return Math.round((vs.reduce((a,b)=>a+b,0)/vs.length)*10)/10;
 };
