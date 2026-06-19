@@ -952,6 +952,29 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
   </div>
 </div>
 
+<!-- Modal: Mail de cierre -->
+<div class="modal-ov" id="mod-reject-mail">
+  <div class="modal" style="width:580px">
+    <div class="modal-hd">
+      <span class="modal-title">✉ Mail de cierre · <span id="rjm-nombre"></span></span>
+      <button class="modal-x" onclick="document.getElementById('mod-reject-mail').classList.remove('open')">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;margin-bottom:12px">
+      <label style="font-size:12px;color:var(--muted);font-weight:600">Para</label>
+      <input type="email" id="rjm-to" placeholder="email del candidato" style="font-size:13px">
+      <label style="font-size:12px;color:var(--muted);font-weight:600">Asunto</label>
+      <input type="text" id="rjm-subject" style="font-size:13px">
+    </div>
+    <textarea id="rjm-body" rows="14" style="width:100%;font-size:13px;line-height:1.65;font-family:'Barlow',sans-serif;resize:vertical;padding:12px;border:1px solid var(--border2);border-radius:8px;color:var(--text);background:var(--surface2)"></textarea>
+    <div style="font-size:11px;color:var(--muted2);margin-top:8px">Podés editar el texto antes de enviar. Se abrirá tu cliente de correo con el borrador listo.</div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="document.getElementById('mod-reject-mail').classList.remove('open')">Cerrar</button>
+      <button class="btn btn-ghost" onclick="copyRejectMail()" id="rjm-copy-btn">📋 Copiar texto</button>
+      <button class="btn btn-primary" onclick="sendRejectMail()">✉ Abrir en correo</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: API Key -->
 <div class="modal-ov" id="mod-apikey">
   <div class="modal" style="width:480px">
@@ -1217,6 +1240,7 @@ function renderCands() {
       <td><div style="display:flex;gap:4px">
         <button class="btn btn-ghost btn-sm" onclick="verCand(${i})">👁 Ver</button>
         <button class="btn btn-ghost btn-sm" onclick="openReport(${i})">📄</button>
+        ${c.rec==='Descartar'?`<button class="btn btn-sm" onclick="openRejectMail(${i})" title="Enviar mail de cierre" style="background:rgba(0,140,220,.08);color:#2a9fd6;border:1px solid rgba(0,140,220,.2)">✉ Mail</button>`:''}
         <button class="btn btn-danger btn-sm" onclick="delCand(${i})">🗑</button>
       </div></td></tr>`;
   }).join('');
@@ -1249,6 +1273,54 @@ function verCand(i) {
       <button class="btn btn-primary" onclick="document.getElementById('mod-cand').classList.remove('open')">Cerrar</button>
     </div>`;
   document.getElementById('mod-cand').classList.add('open');
+}
+
+function openRejectMail(i) {
+  const c = cands[i];
+  const nombre = c.nombre || 'Candidato/a';
+  const primerNombre = nombre.split(' ')[0];
+  const posicion = c.posicion || 'la posición';
+
+  const subject = `Resultado de tu proceso — ${posicion}`;
+
+  const body =
+`Hola ${primerNombre},
+
+Quería comunicarte personalmente el resultado de tu proceso con nosotros, porque me parece importante hacerlo con la consideración que te merecés.
+
+Luego de evaluar cuidadosamente todos los perfiles, tomamos la decisión de avanzar con otra candidatura que se ajustaba mejor a los requerimientos específicos de este momento. Entiendo que no es la respuesta que esperabas, y te lo agradezco de corazón.
+
+Lo que sí puedo decirte con toda certeza es que tu perfil nos resultó muy valioso. Tu CV queda en nuestra base de datos activa en DGL Talent, y cuando surja una oportunidad alineada con tu experiencia y tus expectativas, vas a ser de las primeras personas en quienes pensemos.
+
+Gracias por el tiempo que dedicaste a este proceso, por la confianza que depositaste en nosotros y por compartir tu trayectoria con tanta apertura. Eso no pasa desapercibido.
+
+¡Te deseo mucho éxito en lo que viene!
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`;
+
+  document.getElementById('rjm-nombre').textContent = nombre;
+  document.getElementById('rjm-to').value = c.contacto && c.contacto.includes('@') ? c.contacto : '';
+  document.getElementById('rjm-subject').value = subject;
+  document.getElementById('rjm-body').value = body;
+  document.getElementById('mod-reject-mail').classList.add('open');
+}
+
+function sendRejectMail() {
+  const to      = document.getElementById('rjm-to').value.trim();
+  const subject = encodeURIComponent(document.getElementById('rjm-subject').value);
+  const body    = encodeURIComponent(document.getElementById('rjm-body').value);
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+function copyRejectMail() {
+  const text = document.getElementById('rjm-body').value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('rjm-copy-btn');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => { btn.textContent = '📋 Copiar texto'; }, 2000);
+  });
 }
 
 function delCand(i) {
