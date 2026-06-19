@@ -1235,21 +1235,32 @@ function renderCands() {
   if (!fil.length) { tb.innerHTML=''; em.style.display='block'; return; }
   em.style.display='none';
   tb.innerHTML = fil.map((c) => {
-    const i = cands.indexOf(c), sc = avg(c);
-    const hired = c.clientStatus==='contratado';
-    return `<tr class="${hired?'hired-row':''}">
-      <td><div class="name-cell"><div class="avatar">${ini(c.nombre)}</div><div style="font-weight:500">${c.nombre}</div></div></td>
-      <td style="color:var(--muted);font-size:12px">${c.posicion||'—'}</td>
-      <td style="color:var(--muted);font-size:12px">${c.fecha||'—'}</td>
-      <td><div class="stars-sm">${stH(sc)}</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">${sc}/5</div></td>
-      <td>${pCliSt(c.clientStatus)}</td>
-      <td>${pRec(c.rec)}</td>
-      <td><div style="display:flex;gap:4px">
-        <button class="btn btn-ghost btn-sm" onclick="verCand(${i})">👁 Ver</button>
-        <button class="btn btn-ghost btn-sm" onclick="openReport(${i})">📄</button>
-        ${c.rec==='Descartar'?`<button class="btn btn-sm" onclick="openRejectMail(${i})" title="Enviar mail de cierre" style="background:rgba(0,140,220,.08);color:#2a9fd6;border:1px solid rgba(0,140,220,.2)">✉ Mail</button>`:''}
-        <button class="btn btn-danger btn-sm" onclick="delCand(${i})">🗑</button>
-      </div></td></tr>`;
+    const i = cands.indexOf(c);
+    try {
+      const sc = avg(c);
+      const hired = c.clientStatus==='contratado';
+      const mailBtn = c.rec==='Descartar'
+        ? '<button class="btn btn-sm" onclick="openRejectMail('+i+')" title="Mail de cierre" style="background:rgba(0,140,220,.08);color:#2a9fd6;border:1px solid rgba(0,140,220,.2)">✉</button>'
+        : '';
+      return '<tr class="'+(hired?'hired-row':'')+'"><td><div class="name-cell"><div class="avatar">'+ini(c.nombre)+'</div><div style="font-weight:500">'+c.nombre+'</div></div></td>'
+        +'<td style="color:var(--muted);font-size:12px">'+(c.posicion||'—')+'</td>'
+        +'<td style="color:var(--muted);font-size:12px">'+(c.fecha||'—')+'</td>'
+        +'<td><div class="stars-sm">'+stH(sc)+'</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">'+sc+'/5</div></td>'
+        +'<td>'+pCliSt(c.clientStatus)+'</td>'
+        +'<td>'+pRec(c.rec)+'</td>'
+        +'<td><div style="display:flex;gap:4px">'
+        +'<button class="btn btn-ghost btn-sm" onclick="verCand('+i+')">👁 Ver</button>'
+        +'<button class="btn btn-ghost btn-sm" onclick="openReport('+i+')">📄</button>'
+        +mailBtn
+        +'<button class="btn btn-danger btn-sm" onclick="delCand('+i+')">🗑</button>'
+        +'</div></td></tr>';
+    } catch(e) {
+      return '<tr style="background:rgba(239,68,68,.06)">'
+        +'<td colspan="7" style="padding:10px 16px;font-size:13px">'
+        +'<span style="color:#ef4444">⚠ Datos incompletos: <strong>'+(c.nombre||'sin nombre')+'</strong></span>'
+        +'<button class="btn btn-danger btn-sm" style="margin-left:12px" onclick="delCand('+i+')">🗑 Eliminar</button>'
+        +'</td></tr>';
+    }
   }).join('');
 }
 
