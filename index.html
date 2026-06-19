@@ -1392,11 +1392,11 @@ function escHtml(s) {
 const ini = n => (n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avg = c => {
   if (!c.scores) return 0;
-  const vs = DIMS.map(d => (c.scores[d.key])||0).filter(v=>v>0);
+  const vs = DIMS.map(d => Number(c.scores[d.key])||0).filter(v=>v>0);
   if (!vs.length) return 0;
   return Math.round((vs.reduce((a,b)=>a+b,0)/vs.length)*10)/10;
 };
-const stH = n => '★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));
+const stH = n => { const s = Math.min(5, Math.max(0, Math.round(Number(n)||0))); return '★'.repeat(s)+'☆'.repeat(5-s); };
 const pRec = r => {
   const cl = r==='Avanzar'?'p-av':r==='En espera'?'p-es':'p-di';
   return `<span class="pill ${cl}">${r}</span>`;
