@@ -2961,6 +2961,9 @@ async function doLogin() {
   document.getElementById('app-root').style.display = '';
   const el = document.getElementById('header-username');
   if (el) el.textContent = rec.name.split(' ')[0].toUpperCase() + ' · DGL TALENT';
+  // Re-render the active page after login
+  try { renderCands(); } catch(e) {}
+  try { renderMetricas(); } catch(e) {}
 }
 
 function doLogout() {
