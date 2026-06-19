@@ -2669,23 +2669,23 @@ function copyReport() {
 
 // ─── MÉTRICAS ─────────────────────────────────────────────────
 function renderMetricas() {
-  const prosAct = prospectos.filter(p => p.stage !== 'perdido');
+  const prosAct = prospectos.filter(p => p.etapa !== 'perdido');
   const stageCounts = {};
-  STAGE_ORDER.forEach(s => { stageCounts[s] = prospectos.filter(p => p.stage === s).length; });
+  STAGE_ORDER.forEach(s => { stageCounts[s] = prospectos.filter(p => p.etapa === s).length; });
   const totalPros = prospectos.length || 1;
   const clienteCount = stageCounts['cliente'] || 0;
   const convRate = Math.round(clienteCount / totalPros * 100);
 
-  const contratados = cands.filter(c => c.clientStatus === 'contratado').length;
-  const conOferta   = cands.filter(c => c.clientStatus === 'oferta').length;
+  const contratados   = cands.filter(c => c.clientStatus === 'contratado').length;
+  const conOferta     = cands.filter(c => c.clientStatus === 'ofertado').length;
   const entrevistados = cands.filter(c => c.clientStatus === 'entrevistado').length;
-  const presentados = cands.filter(c => c.clientStatus === 'presentado').length;
+  const presentados   = cands.filter(c => c.clientStatus === 'presentado').length;
 
-  const posAbiertas = positions.filter(p => p.status === 'open').length;
-  const posCerradas = positions.filter(p => p.status === 'closed').length;
+  const posAbiertas = positions.filter(p => p.estado === 'Abierta' || p.estado === 'En proceso').length;
+  const posCerradas = positions.filter(p => p.estado === 'Cerrada').length;
 
-  const billPend  = billing.filter(b => b.estado==='Pendiente'||b.estado==='Vencido').reduce((s,b)=>s+Number(b.monto||0),0);
-  const billPagado = billing.filter(b=>b.estado==='Pagado').reduce((s,b)=>s+Number(b.monto||0),0);
+  const billPend   = billing.filter(b => b.estado==='pendiente'||b.estado==='vencido').reduce((s,b)=>s+Number(b.monto||0),0);
+  const billPagado = billing.filter(b => b.estado==='pagado').reduce((s,b)=>s+Number(b.monto||0),0);
 
   const scored = cands.filter(c=>avg(c)>0);
   const avgSc  = scored.length ? (scored.reduce((s,c)=>s+avg(c),0)/scored.length).toFixed(1) : '—';
