@@ -251,9 +251,27 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 .tl-file:hover{color:var(--text)}
 
 /* Large modal */
-
-/* Large modal */
 .modal-lg{width:820px}
+
+/* Speach */
+.sp-filter{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;letter-spacing:.02em}
+.sp-filter:hover{background:var(--surface3);color:var(--text)}
+.sp-filter.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.speach-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .18s}
+.speach-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.18)}
+.speach-card-hd{padding:14px 16px 10px;display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.speach-title{font-size:13px;font-weight:700;color:var(--text);font-family:'Barlow',sans-serif;margin-bottom:2px}
+.speach-body{flex:1;padding:14px 16px;font-size:12.5px;line-height:1.7;color:var(--muted);white-space:pre-wrap;word-break:break-word}
+.speach-footer{padding:10px 16px 14px;display:flex;justify-content:flex-end}
+.sp-badge-aud{padding:3px 9px;border-radius:12px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.sp-badge-chro{background:rgba(0,140,220,.12);color:#2a9fd6}
+.sp-badge-ciso{background:rgba(167,139,250,.12);color:#a78bfa}
+.sp-badge-type{padding:3px 9px;border-radius:12px;font-size:10.5px;font-weight:700;background:var(--surface3);color:var(--muted)}
+.sp-badge-li{padding:3px 9px;border-radius:12px;font-size:10.5px;font-weight:700;background:rgba(0,119,181,.14);color:#0077b5}
+.sp-badge-email{padding:3px 9px;border-radius:12px;font-size:10.5px;font-weight:700;background:rgba(52,201,147,.1);color:#34c993}
+.sp-copy-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;font-family:'Barlow',sans-serif}
+.sp-copy-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sp-copy-btn.copied{background:var(--ok);color:#fff;border-color:var(--ok)}
 .modal-xl{width:980px}
 .tab-inner{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
 .tab-inner-btn{padding:8px 16px;font-size:12px;cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);transition:color .15s;font-weight:500}
@@ -352,6 +370,9 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
       </div>
       <div class="sb-item sb-sub" data-page="clientes" style="border-radius:8px;margin-bottom:1px">
         <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>Clientes
+      </div>
+      <div class="sb-item sb-sub" data-page="speach" style="border-radius:8px;margin-bottom:1px">
+        <span class="sb-ico"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>Speach
       </div>
     </div>
 
@@ -495,6 +516,38 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SPEACH -->
+<div id="page-speach" class="page">
+  <div class="page-hd">
+    <div>
+      <div class="page-title">Speach · Mensajes de contactación</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">Plantillas de outreach para LinkedIn y correo — copiá y personalizá antes de enviar</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-right:4px">Público</div>
+    <button class="sp-filter active" data-sf="audience" data-val="">Todos</button>
+    <button class="sp-filter" data-sf="audience" data-val="CHRO / RRHH">CHRO / RRHH</button>
+    <button class="sp-filter" data-sf="audience" data-val="CISO">CISO</button>
+    <div style="width:1px;height:20px;background:var(--border2);margin:0 6px"></div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-right:4px">Tipo</div>
+    <button class="sp-filter active" data-sf="type" data-val="">Todos</button>
+    <button class="sp-filter" data-sf="type" data-val="1er contacto">1er contacto</button>
+    <button class="sp-filter" data-sf="type" data-val="7 días">7 días</button>
+    <button class="sp-filter" data-sf="type" data-val="Seguimiento">Seguimiento</button>
+    <div style="width:1px;height:20px;background:var(--border2);margin:0 6px"></div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-right:4px">Canal</div>
+    <button class="sp-filter active" data-sf="channel" data-val="">Todos</button>
+    <button class="sp-filter" data-sf="channel" data-val="LinkedIn">LinkedIn</button>
+    <button class="sp-filter" data-sf="channel" data-val="Email">Email</button>
+  </div>
+
+  <div id="speach-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px"></div>
+  <div id="speach-empty" style="display:none;padding:48px;text-align:center;color:var(--muted)">Sin mensajes que coincidan con los filtros.</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ CANDIDATOS -->
@@ -1056,7 +1109,7 @@ function toggleGroup(id) {
 }
 
 // ─── NAV ──────────────────────────────────────────────────────
-const PAGES = ['contactos','clientes','candidatos','posiciones','evaluacion','metricas','diplomatura'];
+const PAGES = ['contactos','clientes','speach','candidatos','posiciones','evaluacion','metricas','diplomatura'];
 document.querySelectorAll('.sb-item[data-page]').forEach(b => {
   b.addEventListener('click', () => {
     const p = b.dataset.page;
@@ -1069,8 +1122,271 @@ document.querySelectorAll('.sb-item[data-page]').forEach(b => {
     if (p==='evaluacion')  populatePosDatalist();
     if (p==='metricas')    renderMetricas();
     if (p==='diplomatura') renderDiplomatura();
+    if (p==='speach')      renderSpeach();
   });
 });
+
+// ─── SPEACH ───────────────────────────────────────────────────
+const SPEACH_MSGS = [
+
+  // ─── CHRO / RRHH · LinkedIn ───────────────────────────────
+  {
+    audience: 'CHRO / RRHH', type: '1er contacto', channel: 'LinkedIn',
+    title: 'Primer contacto — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre],
+
+Vi que liderás el área de personas en [Empresa] — y quería escribirte porque en DGL Talent nos especializamos exactamente en los perfiles que el mercado generalista no logra cubrir bien: Data Governance, Privacidad de Datos, IA y Ciberseguridad.
+
+No te escribo para ofrecerte un servicio, sino para preguntarte: ¿estás teniendo dificultades para encontrar este tipo de talento en la región?
+
+Si el tema resuena, con gusto coordino 15 minutos para contarte cómo trabajamos.
+
+Sofía Mónaco · DGL Talent`
+  },
+  {
+    audience: 'CHRO / RRHH', type: '7 días', channel: 'LinkedIn',
+    title: '7 días — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre], te vuelvo a escribir porque creo que lo que hacemos puede ser relevante para tu equipo.
+
+Muchos CHROs con quienes hablamos nos dicen lo mismo: "Los perfiles de datos los buscan consultoras generalistas y nunca terminan de entender el perfil." Nosotros venimos del mundo data — por eso encontramos a los candidatos que otros no llegan a ver.
+
+¿Tenés 15 minutos esta semana?
+
+Sofía Mónaco · DGL Talent`
+  },
+  {
+    audience: 'CHRO / RRHH', type: 'Seguimiento', channel: 'LinkedIn',
+    title: 'Seguimiento final — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre], es la última vez que te escribo por acá — lo prometo 😊.
+
+Solo quería dejar abierta la puerta: en DGL Talent nos especializamos en búsquedas de perfiles de datos y privacidad para LATAM. Si en algún momento necesitás un CDO, un Data Governance Lead, un DPO o un experto en IA, sabés dónde encontrarnos.
+
+¡Mucho éxito con todo lo que viene!
+
+Sofía Mónaco · DGL Talent`
+  },
+
+  // ─── CHRO / RRHH · Email ─────────────────────────────────
+  {
+    audience: 'CHRO / RRHH', type: '1er contacto', channel: 'Email',
+    title: 'Primer contacto — Email',
+    subject: 'Talento en datos y privacidad para [Empresa]',
+    body: `Hola [Nombre],
+
+Te escribo desde DGL Talent, la práctica de búsqueda ejecutiva especializada en Data Governance, Privacidad e Inteligencia Artificial de Data Governance Latam.
+
+Trabajamos con empresas de la región en la incorporación de perfiles como CDOs, Data Stewards, Privacy Officers, Data Architects y especialistas en IA — posiciones que el mercado generalista no logra cubrir con la profundidad que el rol requiere.
+
+¿Tenés 15 minutos esta semana para contarme si es un desafío que tienen hoy en [Empresa]?
+
+Quedo a disposición.
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+  {
+    audience: 'CHRO / RRHH', type: '7 días', channel: 'Email',
+    title: '7 días — Email',
+    subject: 'Re: Talento en datos y privacidad · [Empresa]',
+    body: `Hola [Nombre],
+
+Te escribí la semana pasada sobre búsquedas de talento en datos y privacidad. Entiendo que los casilleros se llenan rápido, así que voy directo al punto.
+
+Lo que diferencia a DGL Talent: venimos del ecosistema data. Conocemos a los candidatos, sus proyectos y sus capacidades reales — no buscamos en LinkedIn con keywords.
+
+Si en [Empresa] tienen posiciones abiertas o anticipan incorporaciones en esta área, me gustaría mostrarte cómo trabajamos en una llamada de 15 minutos.
+
+¿Hay un momento esta semana que te quede bien?
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+  {
+    audience: 'CHRO / RRHH', type: 'Seguimiento', channel: 'Email',
+    title: 'Seguimiento final — Email',
+    subject: 'Última consulta · DGL Talent',
+    body: `Hola [Nombre],
+
+Es el último contacto de mi parte — no quiero tomar más tiempo del necesario.
+
+Solo quería asegurarme de que tengás nuestro contacto a mano: en DGL Talent nos especializamos exclusivamente en perfiles de datos, privacidad e IA para empresas de LATAM. Cuando surja la necesidad — un CDO, un DPO, un Data Engineer senior — estaremos disponibles.
+
+¡Mucho éxito con los proyectos que vienen!
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+
+  // ─── CISO · LinkedIn ─────────────────────────────────────
+  {
+    audience: 'CISO', type: '1er contacto', channel: 'LinkedIn',
+    title: 'Primer contacto — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre],
+
+Liderar la seguridad en [Empresa] en este contexto regulatorio debe ser un desafío enorme. Te escribo porque en DGL Talent nos especializamos en perfiles de privacidad de datos y gobierno — DPOs, Privacy Engineers, Compliance Officers — que muchas veces son la primera línea de defensa del CISO.
+
+¿Es un tipo de perfil que te cuesta incorporar? Me gustaría contarte cómo ayudamos a otros equipos de seguridad en LATAM.
+
+Sofía Mónaco · DGL Talent`
+  },
+  {
+    audience: 'CISO', type: '7 días', channel: 'LinkedIn',
+    title: '7 días — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre], vuelvo con algo concreto:
+
+Muchos CISOs con quienes hablamos nos dicen que el mayor cuello de botella no es la tecnología sino encontrar gente que entienda tanto de seguridad como de privacidad y cumplimiento normativo (LGPD, Ley 25.326, ISO 27701...).
+
+Si ese es el caso en [Empresa], creo que puedo ayudarte. ¿15 minutos esta semana?
+
+Sofía Mónaco · DGL Talent`
+  },
+  {
+    audience: 'CISO', type: 'Seguimiento', channel: 'LinkedIn',
+    title: 'Seguimiento final — LinkedIn',
+    subject: null,
+    body: `Hola [Nombre], cierro el loop con esto.
+
+Si en algún momento necesitás un DPO, un Privacy Analyst o alguien con expertise en frameworks de gobierno de datos para reforzar tu equipo, somos probablemente el equipo más especializado en LATAM para encontrarlo.
+
+¡Quedo a disposición cuando lo necesiten!
+
+Sofía Mónaco · DGL Talent`
+  },
+
+  // ─── CISO · Email ────────────────────────────────────────
+  {
+    audience: 'CISO', type: '1er contacto', channel: 'Email',
+    title: 'Primer contacto — Email',
+    subject: 'Perfiles de privacidad y governance para el equipo de seguridad',
+    body: `Hola [Nombre],
+
+En Data Governance Latam trabajamos con CISOs y equipos de seguridad que necesitan incorporar expertise en privacidad de datos — DPOs, Privacy Officers, Privacy Engineers, Compliance Analysts con foco en LGPD, Ley 25.326 y marcos de gobierno de datos.
+
+Son perfiles difíciles de encontrar: requieren conocimiento técnico de seguridad y, al mismo tiempo, comprensión profunda del marco normativo. El mercado generalista raramente los identifica bien.
+
+¿Tenés un momento esta semana para contarme si es un desafío que tienen hoy en [Empresa]?
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+  {
+    audience: 'CISO', type: '7 días', channel: 'Email',
+    title: '7 días — Email',
+    subject: 'Re: Privacidad y governance · [Empresa]',
+    body: `Hola [Nombre],
+
+Te escribí la semana pasada sobre incorporación de perfiles de privacidad y gobierno de datos.
+
+Voy directo: el contexto regulatorio en LATAM se complejizó significativamente en los últimos años. Las empresas con madurez en datos necesitan perfiles que crucen seguridad, privacidad y cumplimiento — y ese cruce es exactamente donde nos especializamos.
+
+Si están evaluando incorporar un DPO, reforzar compliance o construir capacidades de Privacy by Design, me gustaría contarte cómo trabajamos.
+
+¿Hay un momento esta semana?
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+  {
+    audience: 'CISO', type: 'Seguimiento', channel: 'Email',
+    title: 'Seguimiento final — Email',
+    subject: 'Cerrando el loop · DGL Talent',
+    body: `Hola [Nombre],
+
+Es el último contacto de mi parte.
+
+Solo quería asegurarme de que tengan nuestro contacto disponible: en DGL Talent nos especializamos exclusivamente en perfiles de datos y privacidad para LATAM. Si en algún momento necesitan un DPO, un Privacy Engineer o expertise en frameworks de governance, estamos disponibles.
+
+¡Mucho éxito con todo!
+
+Sofía Mónaco
+DGL Talent · Data Governance Latam
+sofia@datagovernancelatam.com`
+  },
+];
+
+let spFilters = { audience: '', type: '', channel: '' };
+
+function renderSpeach() {
+  document.querySelectorAll('.sp-filter').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const sf = this.dataset.sf;
+      document.querySelectorAll(`.sp-filter[data-sf="${sf}"]`).forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      spFilters[sf] = this.dataset.val;
+      _renderSpeachGrid();
+    });
+  });
+  _renderSpeachGrid();
+}
+
+function _renderSpeachGrid() {
+  const fil = SPEACH_MSGS.filter(m =>
+    (!spFilters.audience || m.audience === spFilters.audience) &&
+    (!spFilters.type     || m.type     === spFilters.type)     &&
+    (!spFilters.channel  || m.channel  === spFilters.channel)
+  );
+  const grid  = document.getElementById('speach-grid');
+  const empty = document.getElementById('speach-empty');
+  if (!fil.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  const audCls = { 'CHRO / RRHH': 'sp-badge-chro', 'CISO': 'sp-badge-ciso' };
+  const chCls  = { 'LinkedIn': 'sp-badge-li', 'Email': 'sp-badge-email' };
+  const typeIcon = { '1er contacto': '👋', '7 días': '🔁', 'Seguimiento': '🏁' };
+
+  grid.innerHTML = fil.map((m, idx) => {
+    const subjectHtml = m.subject
+      ? `<div style="font-size:11px;color:var(--muted2);margin:0 16px 0;padding:6px 10px;background:var(--surface3);border-radius:6px;border-left:3px solid var(--border2)"><span style="font-weight:700;color:var(--muted)">Asunto: </span>${m.subject}</div>`
+      : '';
+    return `<div class="speach-card">
+      <div class="speach-card-hd">
+        <span class="sp-badge-aud ${audCls[m.audience]||''}">${m.audience}</span>
+        <span class="sp-badge-type">${typeIcon[m.type]||''} ${m.type}</span>
+        <span class="${chCls[m.channel]||'sp-badge-type'}">${m.channel}</span>
+      </div>
+      ${subjectHtml}
+      <div class="speach-body">${escHtml(m.body)}</div>
+      <div class="speach-footer">
+        <button class="sp-copy-btn" onclick="copySpeach(this, ${idx})">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copySpeach(btn, idx) {
+  const fil = SPEACH_MSGS.filter(m =>
+    (!spFilters.audience || m.audience === spFilters.audience) &&
+    (!spFilters.type     || m.type     === spFilters.type)     &&
+    (!spFilters.channel  || m.channel  === spFilters.channel)
+  );
+  const m = fil[idx];
+  const text = m.subject ? `Asunto: ${m.subject}\n\n${m.body}` : m.body;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copiado';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar';
+    }, 2200);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
 // ─── UTILS ────────────────────────────────────────────────────
 const ini = n => (n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
