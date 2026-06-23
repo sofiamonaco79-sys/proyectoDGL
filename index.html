@@ -830,6 +830,17 @@ tr.hired-row td:first-child{border-left:3px solid var(--ok)}
       </div>
     </div>
     <div class="form-row single"><div class="form-group"><label>Descripción / Requisitos</label><textarea id="po-desc" placeholder="Requisitos clave, contexto de la empresa, expectativas..."></textarea></div></div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>Perfil del puesto (adjunto)</label>
+        <div id="po-file-zone" onclick="document.getElementById('po-file-input').click()" style="border:1.5px dashed var(--border2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--surface2);transition:border-color .15s;user-select:none">
+          <span style="color:var(--muted);flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
+          <span id="po-file-label" style="font-size:13px;color:var(--muted);flex:1">Adjuntar PDF, Word o TXT (máx. 3 MB)</span>
+          <button id="po-file-rm" style="display:none;padding:2px 7px;border-radius:5px;border:1px solid var(--border2);background:var(--surface3);color:var(--muted);font-size:11px;cursor:pointer" onclick="event.stopPropagation();removePosFile()">✕ Quitar</button>
+        </div>
+        <input type="file" id="po-file-input" accept=".pdf,.doc,.docx,.txt,.pptx" style="display:none" onchange="handlePosFile(event)">
+      </div>
+    </div>
     <div class="modal-ft">
       <button class="btn btn-secondary" onclick="closePosModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="guardarPosicion()">Guardar</button>
@@ -1739,6 +1750,36 @@ function delCliente(i) {
 
 // ─── POSICIONES ───────────────────────────────────────────────
 let posIdx = -1;
+let pendingPosFile = null;
+
+function handlePosFile(evt) {
+  const f = evt.target.files[0]; if (!f) return;
+  if (f.size > 3*1024*1024) { alert('El archivo no puede superar 3 MB.'); evt.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingPosFile = { name: f.name, type: f.type, data: e.target.result };
+    document.getElementById('po-file-label').textContent = f.name;
+    document.getElementById('po-file-label').style.color = 'var(--text)';
+    document.getElementById('po-file-rm').style.display = '';
+  };
+  reader.readAsDataURL(f);
+}
+
+function removePosFile() {
+  pendingPosFile = null;
+  document.getElementById('po-file-input').value = '';
+  document.getElementById('po-file-label').textContent = 'Adjuntar PDF, Word o TXT (máx. 3 MB)';
+  document.getElementById('po-file-label').style.color = '';
+  document.getElementById('po-file-rm').style.display = 'none';
+}
+
+function downloadPosFile(i) {
+  const p = positions[i]; if (!p?.profileFile) return;
+  const a = document.createElement('a');
+  a.href = p.profileFile.data;
+  a.download = p.profileFile.name;
+  a.click();
+}
 
 function populatePosClientDropdown() {
   const sel = document.getElementById('po-cliente');
@@ -1800,6 +1841,7 @@ function renderPositions() {
       <td style="font-size:12px;color:var(--muted)">${p.fechaApertura||'—'}</td>
       <td>${pEst(p.estado)}</td>
       <td><div style="display:flex;gap:4px">
+        ${p.profileFile ? `<button class="btn btn-ghost btn-sm" onclick="downloadPosFile(${i})" title="${p.profileFile.name}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="openPosModal(${i})">✏</button>
         <button class="btn btn-danger btn-sm" onclick="delPos(${i})">🗑</button>
       </div></td></tr>`;
@@ -1818,9 +1860,23 @@ function openPosModal(idx=-1) {
   const pp = document.getElementById('po-perfil'); if(pp&&p.perfil) pp.value=p.perfil;
   const pr = document.getElementById('po-resp'); if(pr) pr.value=p.resp||'Sofía';
   const pe = document.getElementById('po-est'); if(pe) pe.value=p.estado||'Abierta';
+  // File state
+  pendingPosFile = p.profileFile || null;
+  document.getElementById('po-file-input').value = '';
+  const lbl = document.getElementById('po-file-label');
+  const rm  = document.getElementById('po-file-rm');
+  if (pendingPosFile) {
+    lbl.textContent = pendingPosFile.name;
+    lbl.style.color = 'var(--text)';
+    rm.style.display = '';
+  } else {
+    lbl.textContent = 'Adjuntar PDF, Word o TXT (máx. 3 MB)';
+    lbl.style.color = '';
+    rm.style.display = 'none';
+  }
   document.getElementById('mod-posicion').classList.add('open');
 }
-function closePosModal() { document.getElementById('mod-posicion').classList.remove('open'); posIdx=-1; }
+function closePosModal() { document.getElementById('mod-posicion').classList.remove('open'); posIdx=-1; pendingPosFile=null; }
 function guardarPosicion() {
   const tit = document.getElementById('po-titulo').value.trim();
   const cli = document.getElementById('po-cliente').value;
@@ -1834,6 +1890,7 @@ function guardarPosicion() {
     estado:      document.getElementById('po-est').value,
     fechaApertura: document.getElementById('po-fecha').value,
     desc:        document.getElementById('po-desc').value,
+    profileFile: pendingPosFile || null,
   };
   if (posIdx>=0) positions[posIdx]=p; else positions.push(p);
   S('dgl_positions_v1', positions);
