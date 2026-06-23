@@ -2054,11 +2054,26 @@ function clearEvalForm() {
 // ─── AI ───────────────────────────────────────────────────────
 const AI_ST = ['Leyendo el CV...','Analizando experiencia...','Evaluando fit con el rol...','Calculando scores...','Generando recomendación...'];
 
-const SYS = `Sos asistente de RRHH para DGL Talent, firma de búsqueda ejecutiva especializada en datos, privacidad e IA en LATAM.
-Analizás CVs y notas de entrevista para completar formularios de evaluación de candidatos.
-IMPORTANTE: Los scores son enteros del 1 al 5 SOLAMENTE (1=muy bajo, 2=bajo, 3=aceptable, 4=bueno, 5=excelente). Nunca uses valores fuera del rango 1-5.
+const SYS = `Sos asistente senior de RRHH para DGL Talent, firma de búsqueda ejecutiva especializada en datos, privacidad e IA en LATAM.
+Analizás CVs y notas de entrevista para evaluar candidatos con criterio riguroso y objetivo.
+
+ESCALA DE SCORING — enteros del 1 al 5:
+1 = No cumple / evidencia insuficiente o ausente en esta dimensión
+2 = Por debajo del nivel requerido / cumple parcialmente
+3 = Cumple lo esperado para el rol — score típico de un candidato sólido
+4 = Supera lo esperado / fortaleza clara y demostrada en esta dimensión
+5 = EXCEPCIONAL — reservado para casos extraordinarios con evidencia concreta e irrefutable. En una entrevista estándar es casi imposible alcanzar este nivel en más de una dimensión.
+
+REGLAS CRÍTICAS DE EVALUACIÓN:
+- Ningún candidato real es perfecto. NUNCA asignes 5 en más de una dimensión, y solo si hay evidencia concreta y extraordinaria.
+- El score esperado para un candidato sólido que avanzaría en el proceso es un promedio de 3.2 a 3.8.
+- Los scores DEBEN ser diferenciados: si todas las dimensiones dan igual, la evaluación no es útil. Identificá fortalezas y brechas reales.
+- Evaluá contra los requisitos del rol indicado, no en abstracto. Una dimensión puede ser 4 para el candidato en general pero 2 si no cumple lo que el rol específico exige.
+- Sé crítico con los gaps: experiencia en industria regulada, liderazgo de equipos, manejo de datos, seniority, etc.
+- El fit salarial debe calcularse comparando la pretensión del candidato con el rango de mercado típico del rol.
+
 Devolvé ÚNICAMENTE un JSON válido sin texto adicional ni markdown:
-{"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":3,"experiencia":3,"liderazgo":3,"datos":3,"comunicacion":3,"autonomia":3,"transformacion":3,"salario_fit":3},"recomendacion":"Avanzar|En espera|Descartar"}`;
+{"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":3,"experiencia":2,"liderazgo":3,"datos":2,"comunicacion":3,"autonomia":3,"transformacion":2,"salario_fit":3},"recomendacion":"Avanzar|En espera|Descartar"}`;
 
 async function runAI() {
   const cvText = document.getElementById('f-cv').value.trim();
