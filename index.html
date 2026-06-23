@@ -1403,7 +1403,7 @@ function escHtml(s) {
 const ini = n => (n||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avg = c => {
   if (!c.scores) return 0;
-  const vs = DIMS.map(d => Number(c.scores[d.key])||0).filter(v=>v>0);
+  const vs = DIMS.map(d => Math.min(5, Math.max(0, Number(c.scores[d.key])||0))).filter(v=>v>0);
   if (!vs.length) return 0;
   return Math.round((vs.reduce((a,b)=>a+b,0)/vs.length)*10)/10;
 };
@@ -2036,8 +2036,9 @@ const AI_ST = ['Leyendo el CV...','Analizando experiencia...','Evaluando fit con
 
 const SYS = `Sos asistente de RRHH para DGL Talent, firma de búsqueda ejecutiva especializada en datos, privacidad e IA en LATAM.
 Analizás CVs y notas de entrevista para completar formularios de evaluación de candidatos.
+IMPORTANTE: Los scores son enteros del 1 al 5 SOLAMENTE (1=muy bajo, 2=bajo, 3=aceptable, 4=bueno, 5=excelente). Nunca uses valores fuera del rango 1-5.
 Devolvé ÚNICAMENTE un JSON válido sin texto adicional ni markdown:
-{"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":1,"experiencia":1,"liderazgo":1,"datos":1,"comunicacion":1,"autonomia":1,"transformacion":1,"salario_fit":1},"recomendacion":"Avanzar|En espera|Descartar"}`;
+{"nombre":"","posicion":"","exp":"","salario":"","modalidad":"Contractor / monotributo|Relación de dependencia|Indistinto","contacto":"","fortalezas":"","riesgos":"","comentarios":"","scores":{"fit_cultural":3,"experiencia":3,"liderazgo":3,"datos":3,"comunicacion":3,"autonomia":3,"transformacion":3,"salario_fit":3},"recomendacion":"Avanzar|En espera|Descartar"}`;
 
 async function runAI() {
   const cvText = document.getElementById('f-cv').value.trim();
@@ -2153,7 +2154,7 @@ function fillAI(d) {
     }
     m.classList.add('aif');
   }
-  if (d.scores) DIMS.forEach(dim => { if(d.scores[dim.key]){hrSc[dim.key]=d.scores[dim.key];drawStars(dim.key);} });
+  if (d.scores) DIMS.forEach(dim => { if(d.scores[dim.key]){ hrSc[dim.key]=Math.min(5,Math.max(1,Math.round(Number(d.scores[dim.key])||1))); drawStars(dim.key); } });
   if (d.recomendacion) selRec(d.recomendacion);
   document.getElementById('f-fecha').value = document.getElementById('f-fecha').value || new Date().toISOString().split('T')[0];
   document.getElementById('ai-badge').classList.add('show');
