@@ -1416,11 +1416,11 @@ const pEst = e => {
   const m = {Activo:'p-act',Potencial:'p-pot',Inactivo:'p-ina',Abierta:'p-abi','En proceso':'p-pro',Pausada:'p-pau',Cerrada:'p-cer'};
   return `<span class="pill ${m[e]||'p-ina'}">${e}</span>`;
 };
-function toast(msg) {
+function toast(msg, ms=3000) {
   const t = document.getElementById('toast');
-  t.textContent = '✓ ' + msg;
+  t.textContent = (msg.startsWith('Error') ? '⚠ ' : '✓ ') + msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(() => t.classList.remove('show'), ms);
 }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,5); }
 function fmtDate(d) {
@@ -1983,35 +1983,38 @@ function handleEvalFile(evt) {
   const isPdf = f.type === 'application/pdf' || ext === 'pdf';
   const isTxt = f.type === 'text/plain' || ext === 'txt';
   const lbl = document.getElementById('f-cv-file-name');
+  const setLbl = (html) => { if (lbl) lbl.innerHTML = html; };
 
   if (!isPdf && !isTxt) {
-    lbl.textContent = '⚠ Formato no soportado';
-    alert('Formato no soportado: "' + f.name + '"\n\nUsá:\n• PDF — para CVs\n• TXT — para transcripciones Tactiq\n\nLos archivos .doc/.docx no pueden ser leídos directamente por la IA.');
+    setLbl('<span style="color:var(--err)">⚠ Formato no soportado — usá PDF o TXT</span>');
+    alert('Formato no soportado: "' + f.name + '"\n\nUsá:\n• PDF — para CVs escaneados o con texto\n• TXT — para transcripciones Tactiq o texto copiado\n\nPara .doc/.docx: abría en Word y guardalo como PDF primero.');
     evt.target.value = '';
     return;
   }
   if (f.size > 8*1024*1024) {
+    setLbl('<span style="color:var(--err)">⚠ Archivo muy grande — máx. 8 MB</span>');
     alert('El archivo es demasiado grande (' + (f.size/1024/1024).toFixed(1) + ' MB). Máximo 8 MB.');
     evt.target.value = ''; return;
   }
 
-  lbl.textContent = '⏳ Leyendo ' + f.name + '...';
+  const sizeFmt = f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : Math.round(f.size/1024)+' KB';
+  setLbl('⏳ Leyendo ' + f.name + '…');
   const reader = new FileReader();
 
   if (isTxt) {
     reader.onload = ev => {
       document.getElementById('f-cv').value = ev.target.result;
-      lbl.textContent = '✓ ' + f.name + ' — texto cargado en el campo de abajo';
+      setLbl('<span style="color:var(--ok)">✓ ' + f.name + ' · ' + sizeFmt + ' — texto cargado</span>');
       pendingEvalFile = {name: f.name, type: 'text/plain', data: null};
     };
-    reader.onerror = () => { lbl.textContent = '⚠ Error leyendo el archivo'; };
+    reader.onerror = () => setLbl('<span style="color:var(--err)">⚠ Error leyendo el archivo</span>');
     reader.readAsText(f);
   } else {
     reader.onload = ev => {
       pendingEvalFile = {name: f.name, type: 'application/pdf', data: ev.target.result};
-      lbl.textContent = '✓ ' + f.name + ' — PDF listo, hacé clic en "Analizar con IA"';
+      setLbl('<span style="color:var(--ok)">✓ ' + f.name + ' · ' + sizeFmt + ' — PDF listo → "Analizar con IA"</span>');
     };
-    reader.onerror = () => { lbl.textContent = '⚠ Error leyendo el PDF'; };
+    reader.onerror = () => setLbl('<span style="color:var(--err)">⚠ Error leyendo el PDF — intentá con un PDF diferente</span>');
     reader.readAsDataURL(f);
   }
 }
@@ -2074,22 +2077,40 @@ async function runAI() {
     msgContent = `CV / Notas de entrevista:\n${cvText}${roleNote}`;
   }
 
-  const reqHeaders = {
-    'Content-Type':'application/json',
-    'x-api-key': localStorage.getItem('dgl_api_key')||'',
-    'anthropic-version':'2023-06-01',
-    'anthropic-dangerous-direct-browser-access':'true'
-  };
-  if (hasPdf) reqHeaders['anthropic-beta'] = 'pdfs-2024-09-25';
+  const apiKey = localStorage.getItem('dgl_api_key')||'';
 
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers: reqHeaders,
+  const doFetch = async (betaHeader) => {
+    const h = {
+      'Content-Type':'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    };
+    if (betaHeader) h['anthropic-beta'] = betaHeader;
+    return fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers: h,
       body: JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:SYS,messages:[{role:'user',content:msgContent}]})
     });
+  };
+
+  try {
+    // Claude 4 has native PDF support (no beta header needed).
+    // If it fails with a beta/document error, retry with the legacy beta header.
+    let r = await doFetch(null);
+    let data = await r.json();
+
+    if (!r.ok && hasPdf) {
+      const errType = data?.error?.type || '';
+      const errMsg2 = (data?.error?.message||'').toLowerCase();
+      const isBetaErr = r.status===400 && (errType==='invalid_request_error' || errMsg2.includes('document') || errMsg2.includes('media_type') || errMsg2.includes('beta'));
+      if (isBetaErr) {
+        // Fallback: retry with legacy beta header
+        r = await doFetch('pdfs-2024-09-25');
+        data = await r.json();
+      }
+    }
+
     clearInterval(iv);
-    const data = await r.json();
     if (!r.ok) {
       const msg = data?.error?.message || `HTTP ${r.status}`;
       if (r.status===401) throw new Error('API Key inválida o expirada. Verificá la clave en ⚙ API Key.');
@@ -2097,17 +2118,23 @@ async function runAI() {
       throw new Error(msg);
     }
     if (data.error) throw new Error(data.error.message);
+
     AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step done';s.querySelector('.ai-step-ico').textContent='✓';}});
     document.getElementById('ai-lbl').textContent='Análisis completado ✓';
     const raw = data.content.find(b=>b.type==='text')?.text||'{}';
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json\n?|```/g,'').trim());
+    } catch(pe) {
+      throw new Error('La IA no devolvió JSON válido. Intentá de nuevo o pegá el CV como texto.');
+    }
     fillAI(parsed);
   } catch(e) {
     clearInterval(iv);
     AI_ST.forEach((_,i)=>{const s=document.getElementById('ast-'+i);if(s){s.className='ai-step';s.querySelector('.ai-step-ico').textContent='✗';}});
     const errMsg = e.message||'Error de red. Verificá tu API Key en ⚙.';
     document.getElementById('ai-lbl').textContent='⚠ ' + errMsg;
-    toast('Error IA: ' + errMsg);
+    toast('Error IA: ' + errMsg, 6000);
     console.error('[DGL AI]', e);
   }
   btn.disabled=false;
