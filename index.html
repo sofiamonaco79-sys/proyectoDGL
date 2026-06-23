@@ -239,6 +239,13 @@ select option{background:var(--surface2);color:var(--text)}
 tr.hired-row td{background:rgba(52,211,153,.04)}
 tr.hired-row td:first-child{border-left:3px solid var(--ok)}
 
+/* Rec inline select */
+.rec-sel{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;outline:none}
+.rec-sel.p-av{background:rgba(52,211,153,.12);color:#22c77d;border-color:rgba(52,211,153,.35)}
+.rec-sel.p-es{background:rgba(251,191,36,.1);color:#f59e0b;border-color:rgba(251,191,36,.3)}
+.rec-sel.p-di{background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.25)}
+.rec-sel:hover{filter:brightness(1.1)}
+
 /* Timeline */
 .timeline{display:flex;flex-direction:column;gap:0;max-height:340px;overflow-y:auto;padding-right:4px}
 .tl-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
@@ -1542,7 +1549,13 @@ function renderCands() {
         +'<td style="color:var(--muted);font-size:12px">'+(c.fecha||'—')+'</td>'
         +'<td><div class="stars-sm">'+stH(sc)+'</div><div style="font-size:11px;color:var(--muted2);margin-top:2px">'+sc+'/5</div></td>'
         +'<td>'+pCliSt(c.clientStatus)+'</td>'
-        +'<td>'+pRec(c.rec)+'</td>'
+        +'<td>'
+        +('<select class="rec-sel '+(c.rec==='Avanzar'?'p-av':c.rec==='En espera'?'p-es':'p-di')+'" onchange="setCandRec('+i+',this.value)">'
+        +'<option value="Avanzar"'+(c.rec==='Avanzar'?' selected':'')+'>✓ Avanzar</option>'
+        +'<option value="En espera"'+(c.rec==='En espera'?' selected':'')+'>⏳ En espera</option>'
+        +'<option value="Descartar"'+(c.rec==='Descartar'?' selected':'')+'>✗ Descartar</option>'
+        +'</select>')
+        +'</td>'
         +'<td><div style="display:flex;gap:4px">'
         +'<button class="btn btn-ghost btn-sm" onclick="verCand('+i+')">👁 Ver</button>'
         +'<button class="btn btn-ghost btn-sm" onclick="openReport('+i+')">📄</button>'
@@ -1634,6 +1647,13 @@ function copyRejectMail() {
     btn.textContent = '✓ Copiado';
     setTimeout(() => { btn.textContent = '📋 Copiar texto'; }, 2000);
   });
+}
+
+function setCandRec(i, val) {
+  if (!cands[i]) return;
+  cands[i].rec = val;
+  S('dgl_cands_v2', cands);
+  renderCands();
 }
 
 function delCand(i) {
