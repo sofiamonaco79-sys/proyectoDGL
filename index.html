@@ -2101,16 +2101,55 @@ async function runAI() {
     si++;if(si>=AI_ST.length)clearInterval(iv);
   },700);
 
-  const roleNote = posText ? `\n\nRol evaluado: ${posText}` : '';
+  // Buscar la posición en el array para incluir perfil completo
+  const matchPos = positions.find(p => p.titulo && p.titulo.toLowerCase() === posText.toLowerCase());
+  let posContext = '';
+  let hasPosFilePdf = false;
+  let posPdfBase64 = '';
+  if (matchPos) {
+    const parts = [`=== PERFIL DEL PUESTO: ${matchPos.titulo} ===`];
+    if (matchPos.cliente)  parts.push(`Cliente: ${matchPos.cliente}`);
+    if (matchPos.perfil)   parts.push(`Perfil buscado: ${matchPos.perfil}`);
+    if (matchPos.desc)     parts.push(`Descripción del rol:\n${matchPos.desc}`);
+    posContext = '\n\n' + parts.join('\n');
+    // Si hay PDF adjunto al puesto, lo vamos a incluir también
+    if (matchPos.profileFile && matchPos.profileFile.data &&
+        (matchPos.profileFile.type === 'application/pdf' || (matchPos.profileFile.name||'').toLowerCase().endsWith('.pdf'))) {
+      hasPosFilePdf = true;
+      posPdfBase64 = matchPos.profileFile.data.split(',')[1];
+    }
+  } else if (posText) {
+    posContext = `\n\nRol evaluado: ${posText}`;
+  }
+
   let msgContent;
-  if (hasPdf) {
-    const base64 = pendingEvalFile.data.split(',')[1];
+  const hasCvPdf = hasPdf;
+
+  if (hasCvPdf && hasPosFilePdf) {
+    // Ambos: CV en PDF + perfil del puesto en PDF
     msgContent = [
-      {type:'document', source:{type:'base64', media_type:'application/pdf', data: base64}},
-      {type:'text', text:`Analizá el CV adjunto (PDF) y completá el formulario JSON.${cvText?'\n\nNotas adicionales de entrevista:\n'+cvText:''}${roleNote}`}
+      {type:'text', text:'PERFIL DEL PUESTO (PDF adjunto a continuación):'},
+      {type:'document', source:{type:'base64', media_type:'application/pdf', data: posPdfBase64}},
+      {type:'text', text:'CV DEL CANDIDATO (PDF adjunto a continuación):'},
+      {type:'document', source:{type:'base64', media_type:'application/pdf', data: pendingEvalFile.data.split(',')[1]}},
+      {type:'text', text:`Evaluá el match del candidato contra el perfil del puesto y completá el formulario JSON.${cvText?'\n\nNotas adicionales de entrevista:\n'+cvText:''}${posContext}`}
+    ];
+  } else if (hasCvPdf) {
+    // Solo CV en PDF (con o sin perfil texto)
+    msgContent = [
+      {type:'document', source:{type:'base64', media_type:'application/pdf', data: pendingEvalFile.data.split(',')[1]}},
+      {type:'text', text:`Analizá el CV adjunto y evaluá el match con el puesto. Completá el formulario JSON.${cvText?'\n\nNotas adicionales de entrevista:\n'+cvText:''}${posContext}`}
+    ];
+  } else if (hasPosFilePdf) {
+    // Solo perfil del puesto en PDF (CV como texto)
+    msgContent = [
+      {type:'text', text:'PERFIL DEL PUESTO (PDF adjunto a continuación):'},
+      {type:'document', source:{type:'base64', media_type:'application/pdf', data: posPdfBase64}},
+      {type:'text', text:`CV / Notas de entrevista del candidato:\n${cvText}${posContext}`}
     ];
   } else {
-    msgContent = `CV / Notas de entrevista:\n${cvText}${roleNote}`;
+    // Todo texto
+    msgContent = `CV / Notas de entrevista:\n${cvText}${posContext}`;
   }
 
   const apiKey = localStorage.getItem('dgl_api_key')||'';
@@ -2135,7 +2174,7 @@ async function runAI() {
     let r = await doFetch(null);
     let data = await r.json();
 
-    if (!r.ok && hasPdf) {
+    if (!r.ok && (hasCvPdf || hasPosFilePdf)) {
       const errType = data?.error?.type || '';
       const errMsg2 = (data?.error?.message||'').toLowerCase();
       const isBetaErr = r.status===400 && (errType==='invalid_request_error' || errMsg2.includes('document') || errMsg2.includes('media_type') || errMsg2.includes('beta'));
